@@ -18,7 +18,7 @@ class DetLogger:
         self._logger = logging.getLogger("message")
         self._logger.setLevel(self._level)
 
-        fileHandler = logging.FileHandler(os.path.join(workspace, "ouput.log"))
+        fileHandler = logging.FileHandler(os.path.join(self._workspace, "ouput.log"))
         fileHandler.setFormatter(formatter)
         fileHandler.setLevel(self._level)
         self._logger.addHandler(fileHandler)
