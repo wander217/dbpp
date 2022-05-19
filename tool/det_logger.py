@@ -29,7 +29,7 @@ class DetLogger:
         self._logger.addHandler(streamHandler)
         self._time: float = time.time()
 
-        self._save_path: str = os.path.join(workspace, "metric.txt")
+        self._save_path: str = os.path.join(self._workspace, "metric.txt")
 
     def reportTime(self, name: str):
         current: float = time.time()
