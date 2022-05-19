@@ -34,11 +34,8 @@ class DetCheckpoint:
     def load(self, device=torch.device('cpu')):
         if isinstance(self._resume, str) and bool(self._resume):
             data: OrderedDict = torch.load(self._resume, map_location=device)
-            assert 'model' in data
             model: OrderedDict = data.get('model')
-            assert 'optimizer' in data
             optim: OrderedDict = data.get('optimizer')
-            assert 'epoch' in data
             epoch: int = data.get('epoch')
             scheduler: OrderedDict = data.get('scheduler')
             return model, optim, epoch, scheduler
