@@ -36,7 +36,7 @@ class DetAug:
         tars = data['anno']
         for tar in tars:
             cv.polylines(img,
-                         [np.int32(tar['bbox']).reshape((1, -1, 2))],
+                         [np.int32(tar['polygon']).reshape((1, -1, 2))],
                          True,
                          (255, 255, 0),
                          lineHeight)

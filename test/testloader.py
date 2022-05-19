@@ -4,7 +4,7 @@ from collections import OrderedDict
 import yaml
 
 if __name__ == "__main__":
-    configPath = r'D:\db_pp\config\dbpp_eb0.yaml'
+    configPath = r'D:\python_project\dbpp\config\dbpp_eb0.yaml'
 
     with open(configPath, encoding='utf-8') as f:
         config = yaml.safe_load(f)
@@ -13,7 +13,7 @@ if __name__ == "__main__":
     print(valid.__len__())
 
     for i in range(0, valid.__len__()):
-        data: OrderedDict = valid.__getitem__(i, isVisual=False)
+        data: OrderedDict = valid.__getitem__(i, isVisual=True)
         print(i)
 
     # train = DetLoader(**config['train']).build()

@@ -48,9 +48,9 @@ train:
   shuffle: True
   pinMemory: False
   dataset:
-    imgType: 1
-    imgDir: 'train/image'
-    tarFile: 'target.json'
+    imgType: 0
+    imgDir: 'D:\python_project\dbpp\breg_detection\train\image'
+    tarFile: 'D:\python_project\dbpp\breg_detection\train\target.json'
     prep:
       DetAug:
         Fliplr:
@@ -85,18 +85,18 @@ valid:
   shuffle: False
   pinMemory: False
   dataset:
-    imgType: 1
-    imgDir: 'D:\dataset\archive\valid/image'
-    tarFile: 'D:\dataset\archive\valid/target.json'
+    imgType: 0
+    imgDir: 'D:\python_project\dbpp\breg_detection\valid\image'
+    tarFile: 'D:\python_project\dbpp\breg_detection\valid\target.json'
     prep:
       DetAug:
         Resize:
-          size: { "height": 960, "width": 1280 }
+          size: { "height": 960, "width": 960 }
       DetForm:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 8
+        minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3
