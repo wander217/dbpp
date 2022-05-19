@@ -1,0 +1,121 @@
+totalEpoch: 1200
+startEpoch: 1
+lr: 0.003
+factor: 0.9
+
+lossModel:
+  model:
+    backbone:
+      netID: 'b2'
+      depthProb: 0.2
+      useSE: False
+    neck:
+      dataPoint: [ 24, 480, 120, 1480 ]
+      exp: 256
+    head:
+      k: 50
+      exp: 256
+      adaptive: True
+
+  loss:
+    threshScale: 10
+    threshLoss:
+      eps: !!float '1e-6'
+    probScale: 5
+    probLoss:
+      ratio: 3.
+      eps: !!float '1e-6'
+    binaryScale: 1
+    binaryLoss:
+      eps: !!float '1e-6'
+
+score:
+  totalBox: 1000
+  edgeThresh: 5
+  probThresh: 0.3
+  scoreThresh: 0.7
+  label: 'probMap'
+
+accurancy:
+  scoreThresh: 0.7
+  ignoreThresh: 0.5
+  accThresh: 0.5
+
+train:
+  batchSize: 8
+  numWorkers: 2
+  dropLast: True
+  shuffle: True
+  pinMemory: False
+  dataset:
+    imgType: 1
+    imgDir: 'train/image'
+    tarFile: 'train/target.json'
+    prep:
+      DetAug:
+        Fliplr:
+          p: 0.5
+        Affine:
+          rotate: [ -10, 10 ]
+          fit_output: True
+        Resize:
+          size: [ 0.5, 3. ]
+      DetCrop:
+        minCropSize: 0.1
+        maxTries: 10
+        generalSize: [ 640, 640 ]
+      DetForm:
+        shrinkRatio: 0.4
+      ProbMaker:
+        shrinkRatio: 0.4
+        minTextSize: 8
+      ThreshMaker:
+        expandRatio: 0.4
+        minThresh: 0.3
+        maxThresh: 0.7
+      DetNorm:
+        mean: [ 122.67891434, 116.66876762, 104.00698793 ]
+      DetFilter:
+        key: [ 'polygon', 'shape', 'ignore', 'train' ]
+
+valid:
+  batchSize: 1
+  numWorkers: 4
+  dropLast: False
+  shuffle: False
+  pinMemory: False
+  dataset:
+    imgType: 0
+    imgDir: 'valid/image'
+    tarFile: 'valid/target.json'
+    prep:
+      DetAug:
+        Resize:
+          size: { "height": 736, "width": 1280 }
+      DetForm:
+        shrinkRatio: 0.4
+      ProbMaker:
+        shrinkRatio: 0.4
+        minTextSize: 1
+      ThreshMaker:
+        expandRatio: 0.4
+        minThresh: 0.3
+        maxThresh: 0.7
+      DetNorm:
+        mean: [ 122.67891434, 116.66876762, 104.00698793 ]
+      DetFilter:
+        key: [ 'train' ]
+
+optimizer:
+  name: Adam
+  args:
+    betas: [ 0.9, 0.999 ]
+    eps: !!float '1e-8'
+
+checkpoint:
+  workspace: './checkpoint'
+  resume: ''
+
+logger:
+  workspace: './logger'
+  level: INFO
