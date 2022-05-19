@@ -37,7 +37,7 @@ class DetDataset(Dataset):
             annos = json.loads(file.readline().strip('\n').strip('\r\t').strip())
         # loading image path
         for anno in annos:
-            self._imgPath.append(os.path.join(self._imgDir, anno['img']))
+            self._imgPath.append(os.path.join(self._imgDir, anno['file_name']))
             polygons: List = [tar for tar in anno['target']]
             self._target.append(polygons)
 
