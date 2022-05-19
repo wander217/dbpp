@@ -36,7 +36,7 @@ class DetAug:
         tars = data['anno']
         for tar in tars:
             cv.polylines(img,
-                         [np.int32(tar['polygon']).reshape((1, -1, 2))],
+                         [np.int32(tar['bbox']).reshape((1, -1, 2))],
                          True,
                          (255, 255, 0),
                          lineHeight)
@@ -76,7 +76,12 @@ class DetAug:
         new_image[:new_h, :new_w, :] = image
         return new_image, new_h, new_w
 
-    def _makeAnnotation(self, aug, data: Dict, orgShape: Tuple, newShape: Tuple, onlyResize: bool) -> Dict:
+    def _makeAnnotation(self,
+                        aug,
+                        data: Dict,
+                        orgShape: Tuple,
+                        newShape: Tuple,
+                        onlyResize: bool) -> Dict:
         '''
            Changing bounding box coordinates
         '''
@@ -89,9 +94,9 @@ class DetAug:
         for tar in data['tar']:
             if onlyResize:
                 newPolygon: List = [(point[0] / orgW * tarW,
-                                     point[1] / orgH * tarH) for point in tar['polygon']]
+                                     point[1] / orgH * tarH) for point in tar['bbox']]
             else:
-                keyPoints: List = [Keypoint(point[0], point[1]) for point in tar['polygon']]
+                keyPoints: List = [Keypoint(point[0], point[1]) for point in tar['bbox']]
                 # clipping overflow bounding box
                 keyPoints = aug.augment_keypoints([KeypointsOnImage(keyPoints,
                                                                     shape=orgShape)])[0].keypoints
