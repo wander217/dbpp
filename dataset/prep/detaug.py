@@ -67,12 +67,15 @@ class DetAug:
               Resize image when valid/test
         '''
         org_h, org_w, _ = image.shape
-        scale = self._newSize['height'] / org_h
+        scale = min([self._newSize['height'] / org_h,
+                     self._newSize['width'] / org_w])
         new_h = math.ceil(scale * org_h)
         new_w = math.ceil(scale * org_w)
-        new_image = np.zeros((math.ceil(new_h / 32) * 32,
-                              math.ceil(new_w / 32) * 32, 3), dtype=np.uint8)
-        image = cv.resize(image, (new_w, new_h), interpolation=cv.INTER_LINEAR)
+        new_image = np.zeros((int(new_h / 32) * 32,
+                              int(new_w / 32) * 32, 3), dtype=np.uint8)
+        image = cv.resize(image, (self._newSize['width'],
+                                  self._newSize['height']),
+                          interpolation=cv.INTER_LINEAR)
         new_image[:new_h, :new_w, :] = image
         return new_image, new_h, new_w
 
