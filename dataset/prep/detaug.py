@@ -69,10 +69,10 @@ class DetAug:
         org_h, org_w, _ = image.shape
         scale = min([self._newSize['height'] / org_h,
                      self._newSize['width'] / org_w])
-        new_h = math.ceil(scale * org_h)
-        new_w = math.ceil(scale * org_w)
+        new_h = int(scale * org_h)
+        new_w = int(scale * org_w)
         new_image = np.zeros((self._newSize['height'], self._newSize['width'], 3), dtype=np.uint8)
-        image = cv.resize(image, (new_w, new_h),  interpolation=cv.INTER_LINEAR)
+        image = cv.resize(image, (new_w, new_h),  interpolation=cv.INTER_CUBIC)
         new_image[:new_h, :new_w, :] = image
         return new_image, new_h, new_w
 
