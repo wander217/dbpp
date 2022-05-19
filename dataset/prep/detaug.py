@@ -71,11 +71,8 @@ class DetAug:
                      self._newSize['width'] / org_w])
         new_h = math.ceil(scale * org_h)
         new_w = math.ceil(scale * org_w)
-        new_image = np.zeros((int(new_h / 32) * 32,
-                              int(new_w / 32) * 32, 3), dtype=np.uint8)
-        image = cv.resize(image, (self._newSize['width'],
-                                  self._newSize['height']),
-                          interpolation=cv.INTER_LINEAR)
+        new_image = np.zeros((self._newSize['height'], self._newSize['width'], 3), dtype=np.uint8)
+        image = cv.resize(image, (new_w, new_h),  interpolation=cv.INTER_LINEAR)
         new_image[:new_h, :new_w, :] = image
         return new_image, new_h, new_w
 

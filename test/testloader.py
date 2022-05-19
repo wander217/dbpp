@@ -9,7 +9,7 @@ if __name__ == "__main__":
     with open(configPath, encoding='utf-8') as f:
         config = yaml.safe_load(f)
 
-    valid = DetDataset(**config['valid']['dataset'])
+    valid = DetDataset(**config['train']['dataset'])
     print(valid.__len__())
 
     for i in range(0, valid.__len__()):
