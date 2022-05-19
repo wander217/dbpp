@@ -9,9 +9,11 @@ from typing import Any, Tuple
 
 class DetCheckpoint:
     def __init__(self, workspace: str, resume: str):
-        self._workspace: str = workspace
-        if not os.path.isdir(workspace):
-            os.mkdir(workspace)
+        if not os.path.isdir("workspace"):
+            os.mkdir("workspace")
+        if not os.path.isdir(os.path.join("workspace", workspace)):
+            os.mkdir(os.path.join("workspace", workspace))
+        self._workspace: str = os.path.join("workspace", workspace)
         self._resume: str = resume.strip()
 
     def saveCheckpoint(self,

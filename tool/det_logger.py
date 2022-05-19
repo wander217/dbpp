@@ -7,9 +7,11 @@ import json
 
 class DetLogger:
     def __init__(self, workspace: str, level: str):
-        if not os.path.isdir(workspace):
-            os.mkdir(workspace)
-        self._workspace: str = workspace
+        if not os.path.isdir("workspace"):
+            os.mkdir("workspace")
+        if not os.path.isdir(os.path.join("workspace", workspace)):
+            os.mkdir(os.path.join("workspace", workspace))
+        self._workspace: str = os.path.join("workspace", workspace)
 
         self._level: int = logging.INFO if level == "INFO" else logging.DEBUG
         formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(message)s')

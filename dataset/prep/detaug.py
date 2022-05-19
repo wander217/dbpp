@@ -93,14 +93,16 @@ class DetAug:
         tarH, tarW, _ = newShape
         for tar in data['tar']:
             if onlyResize:
-                newPolygon: List = [(point[0] / orgW * tarW,
-                                     point[1] / orgH * tarH) for point in tar['bbox']]
+                newPolygon: List = [(point[0] / orgW * tarW, point[1] / orgH * tarH)
+                                    for point in tar['bbox']]
             else:
-                keyPoints: List = [Keypoint(point[0], point[1]) for point in tar['bbox']]
+                keyPoints: List = [Keypoint(point[0], point[1])
+                                   for point in tar['bbox']]
                 # clipping overflow bounding box
                 keyPoints = aug.augment_keypoints([KeypointsOnImage(keyPoints,
                                                                     shape=orgShape)])[0].keypoints
-                newPolygon: List = [(keyPoint.x, keyPoint.y) for keyPoint in keyPoints]
+                newPolygon: List = [(keyPoint.x, keyPoint.y)
+                                    for keyPoint in keyPoints]
             tars.append({
                 'label': tar['label'],
                 'polygon': newPolygon,

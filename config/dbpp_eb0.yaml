@@ -113,9 +113,9 @@ optimizer:
     eps: !!float '1e-8'
 
 checkpoint:
-  workspace: './checkpoint'
+  workspace: 'checkpoint'
   resume: ''
 
 logger:
-  workspace: './logger'
+  workspace: 'logger'
   level: INFO

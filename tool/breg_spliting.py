@@ -1,5 +1,7 @@
 import json
 import os.path
+
+import numpy as np
 from tqdm import tqdm
 import cv2
 import random
@@ -10,16 +12,31 @@ data_paths = [
     r"D:\python_project\label_tool\doanh_nghiep_3",
 ]
 
-save_path = r'D:\db_pp\breg_detection'
+save_path = r'D:\python_project\dbpp\breg_detection'
 
 total_data = []
+n, m = 0, 0
 for path in data_paths:
     with open(os.path.join(path, "target.json"), 'r', encoding='utf-8') as f:
         data = json.loads(f.readline())
     for item in data:
         item['file_name'] = os.path.join(path, "image\\", item['file_name'])
+        new_target = []
+        for target in item['target']:
+            if target['label'] == "64.document":
+                continue
+            tmp = np.array(target['bbox'])
+            points = cv2.boxPoints(cv2.minAreaRect(tmp))
+            box = np.int16(points)
+            new_target.append({
+                "bbox": box.tolist(),
+                "label": target['label'],
+                "text": ""
+            })
+        item['target'] = new_target
     total_data.extend(data)
 random.shuffle(total_data)
+
 
 train_len = 680
 valid_len = 88
