@@ -65,9 +65,9 @@ train:
         maxTries: 10
         generalSize: [ 640, 640 ]
       DetForm:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.6
       ProbMaker:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.7
         minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
@@ -93,9 +93,9 @@ valid:
         Resize:
           size: { "height": 960, "width": 960 }
       DetForm:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.7
       ProbMaker:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.7
         minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
