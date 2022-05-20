@@ -56,7 +56,7 @@ train:
         Fliplr:
           p: 0.5
         Rot90:
-          k: [1, 3]
+          k: [1, 2, 3, 4]
           keep_size: True
         Affine:
           rotate: [ -10, 10 ]
