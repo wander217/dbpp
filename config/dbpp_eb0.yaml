@@ -53,8 +53,6 @@ train:
     tarFile: 'D:\python_project\dbpp\breg_detection\train\target.json'
     prep:
       DetAug:
-        Rot90:
-          k: [ 1, 2, 3, 4 ]
         Fliplr:
           p: 0.5
         Affine:
