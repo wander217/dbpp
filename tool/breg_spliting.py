@@ -1,4 +1,5 @@
 import json
+import math
 import os.path
 import numpy as np
 from tqdm import tqdm
@@ -43,14 +44,19 @@ for path in data_paths:
                 "text": ""
             })
         item['target'] = new_target
-    total_data.extend(data)
-random.shuffle(total_data)
+    total_data.append(data)
 
-train_len = 680
-valid_len = 88
-train_data = total_data[:train_len]
-valid_data = total_data[train_len: train_len + valid_len]
-test_data = total_data[valid_len + train_len:]
+train_data = []
+valid_data = []
+test_data = []
+for i in range(len(total_data)):
+    data = total_data[i]
+    random.shuffle(data)
+    train_len = math.ceil(0.8 * len(data) / 8) * 8
+    valid_len = math.ceil(0.1 * len(data) / 8) * 8
+    train_data.extend(data[:train_len])
+    valid_data.extend(data[train_len: train_len + valid_len])
+    test_data.extend(data[valid_len + train_len:])
 
 os.mkdir(os.path.join(save_path, "train\\"))
 os.mkdir(os.path.join(save_path, "train\\image\\"))
