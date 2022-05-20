@@ -7,6 +7,27 @@ from typing import List
 import torch
 import time
 import yaml
+import math
+
+
+def weight_init(module):
+    if isinstance(module, nn.Conv2d):
+        nn.init.kaiming_normal_(module.weight, mode='fan_out')
+        if module.bias is not None:
+            nn.init.zeros_(module.bias)
+    if isinstance(module, nn.Conv1d):
+        nn.init.kaiming_normal_(module.weight, mode='fan_out')
+        if module.bias is not None:
+            nn.init.zeros_(module.bias)
+    elif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):
+        nn.init.ones_(module.weight)
+        if module.bias is not None:
+            nn.init.zeros_(module.bias)
+    elif isinstance(module, nn.Linear):
+        init_range = 1 / math.sqrt(module.out_features)
+        nn.init.uniform_(module.weight, -init_range, init_range)
+        if module.bias is not None:
+            nn.init.zeros_(module.bias)
 
 
 class DBModel(nn.Module):
@@ -15,6 +36,7 @@ class DBModel(nn.Module):
         self.backbone = DBEfficientNet(**kwargs['backbone'])
         self.neck = DBNeck(**kwargs['neck'])
         self.head = DBHead(**kwargs['head'])
+        self.apply(weight_init)
 
     def forward(self, x: Tensor, training: bool = True) -> OrderedDict:
         brs: List = self.backbone(x)
