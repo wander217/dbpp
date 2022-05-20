@@ -65,9 +65,9 @@ train:
         maxTries: 10
         generalSize: [ 640, 640 ]
       DetForm:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.7
       ProbMaker:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.7
         minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
@@ -95,10 +95,10 @@ valid:
       DetForm:
         shrinkRatio: 0.4
       ProbMaker:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.7
         minTextSize: 4
       ThreshMaker:
-        expandRatio: 0.4
+        expandRatio: 0.7
         minThresh: 0.3
         maxThresh: 0.7
       DetNorm:
