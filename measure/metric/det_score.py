@@ -97,7 +97,8 @@ class DetScore:
         tmp1: List = sorted([points[0], points[1]], key=lambda x: x[1])
         # 2 3
         tmp2: List = sorted([points[2], points[3]], key=lambda x: x[1])
-        ans: List = [tmp1[0], tmp2[0], tmp2[1], tmp1[1]]
+        ans: List = [tmp1[0], tmp2[0],
+                     tmp2[1], tmp1[1]]
         return np.asarray(ans), min(bbox[1])
 
     def _checkCollapse(self, p1: List, p2: List):
@@ -124,7 +125,7 @@ class DetScore:
         cv.fillPoly(mask, [copiedBox.reshape((-1, 2)).astype(np.int32)], 1)
         return cv.mean(probMap[yMin:yMax + 1, xMin:xMax + 1], mask=mask)[0]
 
-    def _expand(self, bbox: np.ndarray, ratio: float = 2) -> np.ndarray:
+    def _expand(self, bbox: np.ndarray, ratio: float = 1.5) -> np.ndarray:
         '''
         expanding bounding box by ratio
             :param bbox: bounding box point

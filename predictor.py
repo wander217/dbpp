@@ -28,15 +28,11 @@ class DBPredictor:
 
     def _resize(self, image: np.ndarray) -> Tuple:
         org_h, org_w, _ = image.shape
-        scale = self._limit / org_h
-        # new_h = math.ceil(org_h / 32) * 32
-        # scale = 0.705 if org_h > self._limit else scale
-        # new_w = math.ceil(org_w / org_h * new_h)
-        new_h = math.ceil(scale * org_h)
-        new_w = math.ceil(scale * org_w)
-        new_image = np.zeros((math.ceil(new_h / 32) * 32,
-                              math.ceil(new_w / 32) * 32, 3), dtype=np.uint8)
-        image = cv.resize(image, (new_w, new_h), interpolation=cv.INTER_LINEAR)
+        scale = min([self._limit / org_h, self._limit / org_w])
+        new_h = int(scale * org_h)
+        new_w = int(scale * org_w)
+        new_image = np.zeros((self._limit, self._limit, 3), dtype=np.uint8)
+        image = cv.resize(image, (new_w, new_h), interpolation=cv.INTER_CUBIC)
         new_image[:new_h, :new_w, :] = image
         print(new_w, new_h)
         return new_image, new_h, new_w

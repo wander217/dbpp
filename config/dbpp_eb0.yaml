@@ -53,11 +53,10 @@ train:
     tarFile: 'D:\python_project\dbpp\breg_detection\train\target.json'
     prep:
       DetAug:
+        Rot90:
+          k: [ 1, 2, 3, 4 ]
         Fliplr:
           p: 0.5
-        Rot90:
-          k: [1, 2, 3, 4]
-          keep_size: True
         Affine:
           rotate: [ -10, 10 ]
           fit_output: True
