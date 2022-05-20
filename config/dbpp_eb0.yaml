@@ -70,7 +70,7 @@ train:
       DetForm:
         shrinkRatio: 0.6
       ProbMaker:
-        shrinkRatio: 0.7
+        shrinkRatio: 0.4
         minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
