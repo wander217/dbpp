@@ -68,9 +68,9 @@ train:
         maxTries: 10
         generalSize: [ 640, 640 ]
       DetForm:
-        shrinkRatio: 0.6
+        shrinkRatio: 0.8
       ProbMaker:
-        shrinkRatio: 0.4
+        shrinkRatio: 0.8
         minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
