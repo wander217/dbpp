@@ -103,14 +103,14 @@ class DetTrainer:
         probLoss: DetAverager = DetAverager()
         threshLoss: DetAverager = DetAverager()
         binaryLoss: DetAverager = DetAverager()
-        for batch in self._valid:
-            self._optim.zero_grad()
-            batchSize: int = batch['img'].size(0)
-            pred, loss, metric = self._model(batch)
-            totalLoss.update(loss.mean().item() * batchSize, batchSize)
-            threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
-            binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
-            probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
+        with torch.no_grad():
+            for batch in self._valid:
+                batchSize: int = batch['img'].size(0)
+                pred, loss, metric = self._model(batch)
+                totalLoss.update(loss.mean().item() * batchSize, batchSize)
+                threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
+                binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
+                probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
         return {
             'totalLoss': totalLoss.calc(),
             'threshLoss': threshLoss.calc(),
