@@ -23,7 +23,7 @@ class DBPredictor:
         state_dict = torch.load(pretrained, map_location=self.device)
         self._model.load_state_dict(state_dict['model'])
         # multi scale problem => training
-        self._score: DetScore = DetScore(**config['score'])
+        self._score: DetScore = DetScore(**config['score'], resize=True)
         self._limit: int = 960
 
     def _resize(self, image: np.ndarray) -> Tuple:
@@ -68,38 +68,17 @@ class DBPredictor:
 
 
 if __name__ == "__main__":
-    configPath: str = r'config/dbpp_se_eb0.yaml'
-    pretrainedPath: str = r'pretrained/se_eb0/checkpoint_1059.pth'
-    # configPath: str = r'config/dbpp_eb0.yaml'
-    # pretrainedPath: str = r'pretrained/eb0/checkpoint_941.pth'
-    # imgPath: str = r'C:\Users\thinhtq\Downloads\vietnamese_original\vietnamese\unseen_test_images\im1999.jpg'
-    # imgPath: str = r'test_image/test10_1.jpeg'
+    configPath: str = r'config/dbpp_eb0.yaml'
+    pretrainedPath: str = r'D:\python_project\dbpp\last.pth'
     predictor = DBPredictor(configPath, pretrainedPath)
-    # img = cv.imread(imgPath)
-    # start = time.time()
-    # boxes, scores = predictor(img)
-    # print(len(boxes))
-    # for box in boxes:
-    #     img = cv.polylines(img, [box], True, (0, 0, 255), 2)
-    # cv.imwrite("abc.jpg", img)
-    # cv.imshow("abc", img)
-    # cv.waitKey(0)
-    # cv.imshow("result", img)
-    # cv.waitKey(0)
-    # cv.imwrite("result/test.jpg", img)
-    # end = time.time() - start
-    # print("Process time:", end)
-    root: str = r'C:\Users\thinhtq\Downloads\vietnamese_original\vietnamese\test_image'
+    root: str = r'D:\python_project\dbpp\breg_detection\test\image'
     count = 0
     for subRoot, dirs, files in os.walk(root):
         for file in files:
-            if file.endswith(".jpg"):
-                print(os.path.join(subRoot, file))
+            if file.endswith(".png") or file.endswith(".jpg"):
                 img = cv.imread(os.path.join(subRoot, file))
-                # kernel = np.ones((3, 3), dtype=np.uint8)
-                # img = cv.erode(img, kernel, iterations=1)
                 boxes, scores = predictor(img)
                 for box in boxes:
                     img = cv.polylines(img, [box], True, (0, 0, 255), 2)
-                cv.imwrite("result5/test{}.jpg".format(count), img)
+                cv.imwrite("result/test{}.jpg".format(count), img)
                 count += 1
