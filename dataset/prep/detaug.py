@@ -7,18 +7,18 @@ import cv2 as cv
 
 
 class DetAug:
-    def __init__(self, **kwargs):
+    def __init__(self, onlyResize: bool, **kwargs):
         # loading module inside imgaug
         moduls: List = []
         for key, item in kwargs.items():
-            modul = getattr(iaa, key)
-            if modul is not None:
-                moduls.append(modul(**item))
+            module = getattr(iaa, key)
+            if module is not None:
+                moduls.append(module(**item))
         self._prep = None
+        self._onlyResize: bool = onlyResize
         # creating preprocess sequent
         if len(moduls) != 0:
             self._prep = iaa.Sequential(moduls)
-        self._newSize = kwargs['Resize']['size']
 
     def __call__(self, data: Dict, isVisual: bool = False):
         '''
@@ -33,7 +33,7 @@ class DetAug:
 
     def _visual(self, data: Dict, lineHeight: int = 2):
         img = data['img']
-        tars = data['anno']
+        tars = data['target']
         for tar in tars:
             cv.polylines(img,
                          [np.int32(tar['polygon']).reshape((1, -1, 2))],
@@ -45,43 +45,25 @@ class DetAug:
     def _build(self, data: Dict) -> Dict:
         image: np.ndarray = data['img']
         shape: Tuple = image.shape
-        onlyResize: bool = not data['train']
 
         if self._prep is not None:
             aug = self._prep.to_deterministic()
-            if onlyResize:
-                newImage, newH, newW = self._resize(image)
-                newShape = (newH, newW, 3)
-            else:
-                newImage = aug.augment_image(image)
-                newShape = newImage.shape
-            data['img'] = newImage
-            data['newShape'] = newShape[:2]
-            self._makeAnnotation(aug, data, shape, newShape, onlyResize)
+            data['img'] = self._resize(image if self._onlyResize else aug.augment_image(image))
+            self._makeAnnotation(aug, data, shape)
         # saving shape to recover
         data.update(orgShape=shape[:2])
         return data
 
-    def _resize(self, image: np.ndarray) -> Tuple:
+    def _resize(self, image: np.ndarray) -> np.ndarray:
         '''
               Resize image when valid/test
         '''
         org_h, org_w, _ = image.shape
-        scale = min([self._newSize['height'] / org_h,
-                     self._newSize['width'] / org_w])
-        new_h = int(scale * org_h)
-        new_w = int(scale * org_w)
-        new_image = np.zeros((self._newSize['height'], self._newSize['width'], 3), dtype=np.uint8)
-        image = cv.resize(image, (new_w, new_h),  interpolation=cv.INTER_CUBIC)
-        new_image[:new_h, :new_w, :] = image
-        return new_image, new_h, new_w
+        new_image = np.zeros((1024, 1024, 3), dtype=np.uint8)
+        new_image[:org_h, :org_w, :] = image
+        return new_image
 
-    def _makeAnnotation(self,
-                        aug,
-                        data: Dict,
-                        orgShape: Tuple,
-                        newShape: Tuple,
-                        onlyResize: bool) -> Dict:
+    def _makeAnnotation(self, aug, data: Dict, shape: Tuple) -> Dict:
         '''
            Changing bounding box coordinates
         '''
@@ -89,24 +71,22 @@ class DetAug:
             return data
 
         tars: List = []
-        orgH, orgW, _ = orgShape
-        tarH, tarW, _ = newShape
-        for tar in data['tar']:
-            if onlyResize:
-                newPolygon: List = [(point[0] / orgW * tarW, point[1] / orgH * tarH)
+        for tar in data['target']:
+            if self._onlyResize:
+                newPolygon: List = [(point[0], point[1])
                                     for point in tar['bbox']]
             else:
                 keyPoints: List = [Keypoint(point[0], point[1])
                                    for point in tar['bbox']]
-                # clipping overflow bounding box
-                keyPoints = aug.augment_keypoints([KeypointsOnImage(keyPoints,
-                                                                    shape=orgShape)])[0].keypoints
+                keyPoints = aug.augment_keypoints([
+                    KeypointsOnImage(keyPoints, shape=shape)
+                ])[0].keypoints
                 newPolygon: List = [(keyPoint.x, keyPoint.y)
                                     for keyPoint in keyPoints]
             tars.append({
-                'label': tar['label'],
+                'label': tar['text'],
                 'polygon': newPolygon,
-                'ignore': tar['label'] == '###'
+                'ignore': tar['text'] == '###'
             })
-        data['anno'] = tars
+        data['target'] = tars
         return data

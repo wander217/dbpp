@@ -35,19 +35,24 @@ class DetTrainer:
         optimCls = getattr(optim, optimizer['name'])
         self._lr: float = lr
         self._factor: float = factor
+        self._step = 0
         self._optim: optim.Optimizer = optimCls(**optimizer['args'],
                                                 lr=self._lr,
                                                 params=self._model.parameters())
         self._totalEpoch: int = totalEpoch + 1
         self._startEpoch: int = startEpoch
         self._curLR: float = lr
+        self.totalLoss: DetAverager = DetAverager()
+        self.probLoss: DetAverager = DetAverager()
+        self.threshLoss: DetAverager = DetAverager()
+        self.binaryLoss: DetAverager = DetAverager()
 
     def _loadCheckpoint(self):
         stateDict: Tuple = self._checkpoint.load(self._device)
         if stateDict is not None:
             self._model.load_state_dict(stateDict[0])
-            # self._optim.load_state_dict(stateDict[1])
-            # self._startEpoch = stateDict[2] + 1
+            self._optim.load_state_dict(stateDict[1])
+            self._startEpoch = stateDict[2] + 1
 
     def _updateLR(self, epoch: int):
         rate: float = (1. - epoch / self._totalEpoch) ** self._factor
@@ -64,20 +69,13 @@ class DetTrainer:
         for i in range(self._startEpoch, self._totalEpoch):
             self._logger.reportDelimitter()
             self._logger.reportTime("Epoch {}".format(i))
-            self._updateLR(i)
-            trainRS: Dict = self._train_step()
-            validRS: Dict = self._valid_step()
-            self._save(trainRS, validRS, i)
+            self._trainStep()
         self._logger.reportDelimitter()
         self._logger.reportTime("Finish")
         self._logger.reportDelimitter()
 
     def _train_step(self) -> Dict:
         self._model.train()
-        totalLoss: DetAverager = DetAverager()
-        probLoss: DetAverager = DetAverager()
-        threshLoss: DetAverager = DetAverager()
-        binaryLoss: DetAverager = DetAverager()
         for batch in self._train:
             self._optim.zero_grad()
             batchSize: int = batch['img'].size(0)
@@ -85,17 +83,21 @@ class DetTrainer:
             loss = loss.mean()
             loss.backward()
             self._optim.step()
-            totalLoss.update(loss.item() * batchSize, batchSize)
-            threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
-            binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
-            probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
-        return {
-            'totalLoss': totalLoss.calc(),
-            'threshLoss': threshLoss.calc(),
-            'binaryLoss': binaryLoss.calc(),
-            'probLoss': probLoss.calc(),
-            'lr': self._curLR
-        }
+            self.totalLoss.update(loss.item() * batchSize, batchSize)
+            self.threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
+            self.binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
+            self.probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
+            self._step += 1
+            if self._step % 400 == 0:
+                validRS = self._valid_step()
+                self._model.train()
+                self._save({
+                    'totalLoss': self.totalLoss.calc(),
+                    'threshLoss': self.threshLoss.calc(),
+                    'binaryLoss': self.binaryLoss.calc(),
+                    'probLoss': self.probLoss.calc()
+                }, validRS)
+                self.totalLoss.reset()
 
     def _valid_step(self):
         self._model.eval()
@@ -118,15 +120,16 @@ class DetTrainer:
             'probLoss': probLoss.calc()
         }
 
-    def _save(self, trainRS: Dict, validRS: Dict, epoch: int):
-        self._logger.reportMetric("training", trainRS)
-        self._logger.reportMetric("validation", validRS)
+    def _save(self, trainRS: Dict, validRS: Dict):
+        self._logger.reportTime("Step {}".format(self._step))
+        self._logger.reportMetric("Training", trainRS)
+        self._logger.reportMetric("Validation", validRS)
         self._logger.writeFile({
             "training": trainRS,
             "validation": validRS
         })
-        self._checkpoint.saveCheckpoint(epoch, self._model, self._optim)
-        self._checkpoint.saveModel(self._model, epoch)
+        self._checkpoint.saveCheckpoint(self._step, self._model, self._optim)
+        self._checkpoint.saveModel(self._model, self._step)
 
 
 if __name__ == "__main__":

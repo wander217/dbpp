@@ -11,3 +11,7 @@ class DetAverager:
         if self._counter == 0:
             return 0
         return self._value / self._counter
+
+    def reset(self):
+        self._value = 0
+        self._counter = 0
