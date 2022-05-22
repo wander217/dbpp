@@ -48,11 +48,8 @@ class DetAug:
 
         if self._prep is not None:
             aug = self._prep.to_deterministic()
-            if not self._onlyResize:
-                data['img'] = aug.augment_image(image)
-                self._makeAnnotation(aug, data, shape)
-            else:
-                data['img'] = self._resize(image)
+            data['img'] = self._resize(image) if self._onlyResize else aug.augment_image(image)
+            self._makeAnnotation(aug, data, shape)
         # saving shape to recover
         data.update(orgShape=shape[:2])
         return data
