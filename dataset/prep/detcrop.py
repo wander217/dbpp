@@ -17,7 +17,7 @@ class DetCrop:
 
     def _visual(self, data: Dict):
         img = data['img']
-        tars = data['anno']
+        tars = data['target']
         for tar in tars:
             cv.polylines(img,
                          [np.int32(tar['polygon']).reshape((-1, 1, 2))],

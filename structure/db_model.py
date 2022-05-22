@@ -12,7 +12,7 @@ import math
 
 def weight_init(module):
     if isinstance(module, nn.Conv2d):
-        nn.init.kaiming_normal_(module.weight, mode='fan_out')
+        nn.init.kaiming_normal_(module.weight, mode="fan_out", nonlinearity="relu")
         if module.bias is not None:
             nn.init.zeros_(module.bias)
     if isinstance(module, nn.Conv1d):
@@ -47,7 +47,7 @@ class DBModel(nn.Module):
 
 # test
 if __name__ == "__main__":
-    file_config: str = r'D:\db_pp\config\dbpp_eb0.yaml'
+    file_config: str = r'D:\workspace\project\dbpp\config\dbpp_eb0.yaml'
     with open(file_config) as stream:
         data = yaml.safe_load(stream)
     model = DBModel(**data['lossModel']['model'])
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     train_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('total params:', total_params)
     print('train params:', train_params)
-    a = torch.rand((1, 3, 640, 640), dtype=torch.float)
+    a = torch.rand((1, 3, 800, 800), dtype=torch.float)
     start = time.time()
-    b = model(a)
+    b = model(a, training=False)
     print('run:', time.time() - start)

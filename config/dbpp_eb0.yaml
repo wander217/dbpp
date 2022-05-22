@@ -8,9 +8,9 @@ lossModel:
     backbone:
       netID: 'b0'
       depthProb: 0.2
-      useSE: False
+      useSE: True
     neck:
-      dataPoint: [ 24, 40, 112, 1280 ]
+      data_point: [ 24, 40, 112, 1280 ]
       exp: 256
     head:
       k: 50
@@ -67,12 +67,12 @@ train:
       DetCrop:
         minCropSize: 0.1
         maxTries: 10
-        generalSize: [ 640, 640 ]
+        generalSize: [ 800, 800 ]
       DetForm:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 4
+        minTextSize: 8
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3
@@ -101,7 +101,7 @@ valid:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 4
+        minTextSize: 8
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3
