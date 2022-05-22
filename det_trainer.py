@@ -53,6 +53,7 @@ class DetTrainer:
             self._model.load_state_dict(stateDict[0])
             self._optim.load_state_dict(stateDict[1])
             self._startEpoch = stateDict[2] + 1
+            self._step = stateDict[3] + 1
 
     def _updateLR(self, epoch: int):
         rate: float = (1. - epoch / self._totalEpoch) ** self._factor
@@ -69,12 +70,12 @@ class DetTrainer:
         for i in range(self._startEpoch, self._totalEpoch):
             self._logger.reportDelimitter()
             self._logger.reportTime("Epoch {}".format(i))
-            self._train_step()
+            self._train_step(i)
         self._logger.reportDelimitter()
         self._logger.reportTime("Finish")
         self._logger.reportDelimitter()
 
-    def _train_step(self):
+    def _train_step(self, epoch: int):
         self._model.train()
         for batch in self._train:
             self._optim.zero_grad()
@@ -96,7 +97,7 @@ class DetTrainer:
                     'threshLoss': self.threshLoss.calc(),
                     'binaryLoss': self.binaryLoss.calc(),
                     'probLoss': self.probLoss.calc()
-                }, validRS)
+                }, validRS, epoch)
                 self.totalLoss.reset()
                 self.threshLoss.reset()
                 self.binaryLoss.reset()
@@ -123,7 +124,7 @@ class DetTrainer:
             'probLoss': probLoss.calc()
         }
 
-    def _save(self, trainRS: Dict, validRS: Dict):
+    def _save(self, trainRS: Dict, validRS: Dict, epoch):
         self._logger.reportTime("Step {}".format(self._step))
         self._logger.reportMetric("Training", trainRS)
         self._logger.reportMetric("Validation", validRS)
@@ -131,7 +132,7 @@ class DetTrainer:
             "training": trainRS,
             "validation": validRS
         })
-        self._checkpoint.saveCheckpoint(self._step, self._model, self._optim)
+        self._checkpoint.saveCheckpoint(self._step, epoch, self._model, self._optim)
         self._checkpoint.saveModel(self._model, self._step)
 
 

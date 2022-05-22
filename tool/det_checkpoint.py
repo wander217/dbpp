@@ -17,20 +17,20 @@ class DetCheckpoint:
         self._resume: str = resume.strip()
 
     def saveCheckpoint(self,
+                       step: int,
                        epoch: int,
                        model: nn.Module,
-                       optim: optim.Optimizer,
-                       scheduler=None):
+                       optim: optim.Optimizer):
         lastPath: str = os.path.join(self._workspace, "last.pth")
         torch.save({
             'model': model.state_dict(),
             'optimizer': optim.state_dict(),
-            'scheduler': scheduler.state_dict() if scheduler is not None else None,
+            'step': step,
             'epoch': epoch
         }, lastPath)
 
-    def saveModel(self, model: nn.Module, epoch: int) -> Any:
-        path: str = os.path.join(self._workspace, "checkpoint_{}.pth".format(epoch))
+    def saveModel(self, model: nn.Module, step: int) -> Any:
+        path: str = os.path.join(self._workspace, "checkpoint_{}.pth".format(step))
         torch.save({"model": model.state_dict()}, path)
 
     def load(self, device=torch.device('cpu')):
@@ -39,8 +39,8 @@ class DetCheckpoint:
             model: OrderedDict = data.get('model')
             optim: OrderedDict = data.get('optimizer')
             epoch: int = data.get('epoch')
-            scheduler: OrderedDict = data.get('scheduler')
-            return model, optim, epoch, scheduler
+            step: int = data.get('step')
+            return model, optim, epoch, step
 
     def loadPath(self, path: str, device=torch.device('cpu')) -> OrderedDict:
         data: OrderedDict = torch.load(path, map_location=device)
