@@ -16,8 +16,6 @@ class DBNeck(nn.Module):
         self._hour_glass: nn.Module = nn.Sequential(*[
             HourGlass(exp, exp) for _ in range(2)
         ])
-        expOutput = exp // 4
-        self.adaptiveScale: nn.Module = AdaptiveScaleFusion(exp, expOutput)
 
     def forward(self, feature: List) -> Tensor:
         '''

@@ -8,7 +8,7 @@ lossModel:
     backbone:
       netID: 'b0'
       depthProb: 0.2
-      useSE: True
+      useSE: False
     neck:
       data_point: [ 24, 40, 112, 1280 ]
       exp: 256
