@@ -1,6 +1,4 @@
 import os
-import time
-
 from loss_model import LossModel
 import torch
 import yaml
@@ -8,7 +6,6 @@ from measure.metric import DetScore
 from typing import Dict, List, Tuple, OrderedDict
 import numpy as np
 import cv2 as cv
-import math
 
 
 class DBPredictor:
@@ -64,7 +61,7 @@ class DBPredictor:
 
 
 if __name__ == "__main__":
-    configPath: str = r'config/dbpp_eb0.yaml'
+    configPath: str = r'config/dbpp_se_eb0.yaml'
     pretrainedPath: str = r'D:\python_project\dbpp\last.pth'
     predictor = DBPredictor(configPath, pretrainedPath)
     root: str = r'D:\python_project\dbpp\breg_detection\valid\image'
