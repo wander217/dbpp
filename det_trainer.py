@@ -124,7 +124,7 @@ class DetTrainer:
             'probLoss': probLoss.calc()
         }
 
-    def _save(self, trainRS: Dict, validRS: Dict, epoch):
+    def _save(self, trainRS: Dict, validRS: Dict, epoch:int):
         self._logger.reportTime("Step {}".format(self._step))
         self._logger.reportMetric("Training", trainRS)
         self._logger.reportMetric("Validation", validRS)
