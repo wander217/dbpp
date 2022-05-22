@@ -53,6 +53,7 @@ train:
     tarFile: 'D:\python_project\dbpp\breg_detection\train\target.json'
     prep:
       DetAug:
+        onlyResize: False
         Fliplr:
           p: 0.5
         Affine:
@@ -93,6 +94,7 @@ valid:
     tarFile: 'D:\python_project\dbpp\breg_detection\valid\target.json'
     prep:
       DetAug:
+        onlyResize: True
         Resize:
           size: { "height": 960, "width": 960 }
       DetForm:
