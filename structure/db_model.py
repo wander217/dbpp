@@ -47,7 +47,7 @@ class DBModel(nn.Module):
 
 # test
 if __name__ == "__main__":
-    file_config: str = r'D:\workspace\project\dbpp\config\dbpp_eb0.yaml'
+    file_config: str = r'D:\workspace\project\dbpp\config\dbpp_se_eb1.yaml'
     with open(file_config) as stream:
         data = yaml.safe_load(stream)
     model = DBModel(**data['lossModel']['model'])

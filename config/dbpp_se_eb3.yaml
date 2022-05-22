@@ -1,6 +1,6 @@
-totalEpoch: 1200
+totalEpoch: 1000
 startEpoch: 1
-lr: 0.007
+lr: 0.003
 factor: 0.9
 
 lossModel:
@@ -10,8 +10,8 @@ lossModel:
       depthProb: 0.2
       useSE: True
     neck:
-      dataPoint: [32, 48, 136, 1536]
-      exp: 256
+        data_point: [ 32, 48, 136, 1536 ]
+        exp: 256
     head:
       k: 50
       exp: 256
@@ -34,11 +34,11 @@ score:
   edgeThresh: 5
   probThresh: 0.3
   scoreThresh: 0.7
-  label: 'probMap'
+  label: 'binaryMap'
 
 accurancy:
-  probThresh: 0.3
   ignoreThresh: 0.5
+  scoreThresh: 0.7
   accThresh: 0.5
 
 train:
@@ -48,22 +48,26 @@ train:
   shuffle: True
   pinMemory: False
   dataset:
-    imgType: 1
-    imgDir: 'train/image'
-    tarFile: 'train/target.json'
+    imgType: 0
+    imgDir: 'D:\TextOCR\splited\train/image'
+    tarFile: 'D:\TextOCR\splited\train/target.json'
     prep:
       DetAug:
+        onlyResize: False
         Fliplr:
           p: 0.5
         Affine:
           rotate: [ -10, 10 ]
+          shear:
+            x: [ -10, 10 ]
+            y: [ -10, 10 ]
           fit_output: True
         Resize:
           size: [ 0.5, 3. ]
       DetCrop:
         minCropSize: 0.1
         maxTries: 10
-        generalSize: [ 640, 640 ]
+        generalSize: [ 800, 800 ]
       DetForm:
         shrinkRatio: 0.4
       ProbMaker:
@@ -86,17 +90,18 @@ valid:
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'valid/image'
-    tarFile: 'valid/target.json'
+    imgDir: 'D:\python_project\dbpp\breg_detection\valid\image'
+    tarFile: 'D:\python_project\dbpp\breg_detection\valid\target.json'
     prep:
       DetAug:
+        onlyResize: True
         Resize:
-          size: { "height": 736, "width": 1280 }
+          size: { "height": 960, "width": 960 }
       DetForm:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 1
+        minTextSize: 8
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3
@@ -113,9 +118,9 @@ optimizer:
     eps: !!float '1e-8'
 
 checkpoint:
-  workspace: './checkpoint'
+  workspace: 'checkpoint'
   resume: ''
 
 logger:
-  workspace: './logger'
+  workspace: 'logger'
   level: INFO
