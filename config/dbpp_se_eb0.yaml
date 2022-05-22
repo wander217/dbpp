@@ -90,8 +90,8 @@ valid:
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\python_project\dbpp\breg_detection\valid\image'
-    tarFile: 'D:\python_project\dbpp\breg_detection\valid\target.json'
+    imgDir: 'D:\TextOCR\splited\valid/image'
+    tarFile: 'D:\TextOCR\splited\valid/target.json'
     prep:
       DetAug:
         onlyResize: True
