@@ -55,15 +55,15 @@ class DetDataset(Dataset):
         data['train'] = self._train
         data['target'] = self._target[index]
         data['img'] = image
-        # try:
-        for proc in self._prep:
-            data = proc(data, isVisual)
-        if len(self._prep) != 0 and isVisual:
-            cv.waitKey(0)
-        return data
-        # except Exception as e:
-        #     print(e)
-        #     return self.__getitem__(random.randint(0, self.__len__() - 1), isVisual)
+        try:
+            for proc in self._prep:
+                data = proc(data, isVisual)
+            if len(self._prep) != 0 and isVisual:
+                cv.waitKey(0)
+            return data
+        except Exception as e:
+            print(e)
+            return self.__getitem__(random.randint(0, self.__len__() - 1), isVisual)
 
     def __len__(self):
         return len(self._imgPath)
