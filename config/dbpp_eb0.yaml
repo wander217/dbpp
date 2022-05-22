@@ -1,4 +1,4 @@
-totalEpoch: 1200
+totalEpoch: 1000
 startEpoch: 1
 lr: 0.003
 factor: 0.9
