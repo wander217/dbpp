@@ -49,8 +49,8 @@ train:
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\python_project\dbpp\breg_detection\train\image'
-    tarFile: 'D:\python_project\dbpp\breg_detection\train\target.json'
+    imgDir: 'D:\TextOCR\splited\train/image'
+    tarFile: 'D:\TextOCR\splited\train/target.json'
     prep:
       DetAug:
         onlyResize: False

@@ -23,11 +23,10 @@ class DetForm:
         '''
         polygon: List = []
         ignore: List = []
-        anno: np.ndarray = data['anno']
+        anno: np.ndarray = data['target']
         img: np.ndarray = data['img']
         train: bool = data['train']
         orgShape: np.ndarray = np.array(data['orgShape'])
-        newShape: np.ndarray = np.array(data['newShape'])
 
         for tar in anno:
             polygon.append(np.array(tar['polygon']))
@@ -37,7 +36,6 @@ class DetForm:
             img=img,
             polygon=polygon,
             orgShape=orgShape,
-            newShape=newShape,
             ignore=np.array(ignore, dtype=np.uint8),
             train=train
         )
