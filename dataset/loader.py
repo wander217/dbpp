@@ -1,3 +1,5 @@
+import random
+
 import torch
 from torch.utils.data import DataLoader, Dataset
 from typing import Dict, List, Tuple
@@ -51,13 +53,16 @@ class DetDataset(Dataset):
         imgPath: str = self._imgPath[index]
         image: np.ndarray = self._loadImage(imgPath)
         data['train'] = self._train
-        data['tar'] = self._target[index]
+        data['target'] = self._target[index]
         data['img'] = image
-        for proc in self._prep:
-            data = proc(data, isVisual)
-        if len(self._prep) != 0 and isVisual:
-            cv.waitKey(0)
-        return data
+        try:
+            for proc in self._prep:
+                data = proc(data, isVisual)
+            if len(self._prep) != 0 and isVisual:
+                cv.waitKey(0)
+            return data
+        except Exception as e:
+            return self.__getitem__(random.randint(0, self.__len__() - 1), isVisual)
 
     def __len__(self):
         return len(self._imgPath)

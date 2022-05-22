@@ -69,12 +69,12 @@ class DetTrainer:
         for i in range(self._startEpoch, self._totalEpoch):
             self._logger.reportDelimitter()
             self._logger.reportTime("Epoch {}".format(i))
-            self._trainStep()
+            self._train_step()
         self._logger.reportDelimitter()
         self._logger.reportTime("Finish")
         self._logger.reportDelimitter()
 
-    def _train_step(self) -> Dict:
+    def _train_step(self):
         self._model.train()
         for batch in self._train:
             self._optim.zero_grad()
@@ -98,6 +98,9 @@ class DetTrainer:
                     'probLoss': self.probLoss.calc()
                 }, validRS)
                 self.totalLoss.reset()
+                self.threshLoss.reset()
+                self.binaryLoss.reset()
+                self.probLoss.reset()
 
     def _valid_step(self):
         self._model.eval()
