@@ -140,7 +140,7 @@ if __name__ == "__main__":
     with open(args.path) as f:
         config: Dict = yaml.safe_load(f)
     if args.data.strip():
-        for item in ["train/", "valid/"]:
+        for item in ["train", "valid"]:
             config[item]['dataset']['imgDir'] = os.path.join(args.data.strip(), item, "image/")
             config[item]['dataset']['tarFile'] = os.path.join(args.data.strip(), item, "target.json")
             config[item]['dataset']['imgType'] = args.imgType
