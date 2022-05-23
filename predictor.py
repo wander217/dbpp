@@ -65,9 +65,9 @@ class DBPredictor:
 
 if __name__ == "__main__":
     configPath: str = r'config/dbpp_se_eb0.yaml'
-    pretrainedPath: str = r'D:\python_project\dbpp\pretrained\se_eb0\checkpoint_706.pth'
+    pretrainedPath: str = r'D:\python_project\dbpp\logging\workspace\checkpoint\checkpoint_287.pth'
     predictor = DBPredictor(configPath, pretrainedPath)
-    root: str = r'D:\python_project\dbpp\breg_detection\valid\image'
+    root: str = r'D:\python_project\dbpp\breg_detection\test\image'
     count = 0
     for subRoot, dirs, files in os.walk(root):
         for file in files:
@@ -76,5 +76,5 @@ if __name__ == "__main__":
                 boxes, scores = predictor(img)
                 for box in boxes:
                     img = cv.polylines(img, [box], True, (0, 0, 255), 2)
-                cv.imwrite("result1/test{}.jpg".format(count), img)
+                cv.imwrite("result/test{}.jpg".format(count), img)
                 count += 1
