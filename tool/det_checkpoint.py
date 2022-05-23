@@ -37,8 +37,7 @@ class DetCheckpoint:
             model: OrderedDict = data.get('model')
             optim: OrderedDict = data.get('optimizer')
             epoch: int = data.get('epoch')
-            step: int = data.get('step')
-            return model, optim, epoch, step
+            return model, optim, epoch
 
     def loadPath(self, path: str, device=torch.device('cpu')) -> OrderedDict:
         data: OrderedDict = torch.load(path, map_location=device)
