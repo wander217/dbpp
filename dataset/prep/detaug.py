@@ -18,7 +18,7 @@ class DetAug:
         self._onlyResize: bool = onlyResize
         # creating preprocess sequent
         if len(moduls) != 0:
-            self._prep = iaa.Sequential(moduls)
+            self._prep = iaa.SomeOf(0.5, *moduls)
 
     def __call__(self, data: Dict, isVisual: bool = False):
         '''
