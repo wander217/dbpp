@@ -34,15 +34,20 @@ for path in data_paths:
         mask = np.zeros(item['image'].shape, dtype=np.int32)
         mask = cv.fillPoly(mask, [np.array(document_bbox)], (1, 1, 1))
         item['image'] = (mask * item['image'])[y_min: y_max + 1, x_min:x_max + 1]
+        h, w, c = item['image'].shape
+        scale = min([960 / h, 960 / w])
+        new_h, new_w = int(scale * h), int(scale * w)
+        item['image'] = cv.resize(np.uint8(item['image']),
+                                  (new_w, new_h),
+                                  interpolation=cv.INTER_CUBIC)
         for target in item['target']:
             if target['label'] == "64.document":
                 continue
             tmp = np.array(target['bbox'])
             points = cv.boxPoints(cv.minAreaRect(tmp))
             box = np.int16(points).reshape((-1, 2))
-            print(box.shape)
             new_target.append({
-                "bbox": (box - np.array([x_min, y_min])).tolist(),
+                "bbox": ((box - np.array([x_min, y_min])) * scale).tolist(),
                 "label": target['label'],
                 "text": ""
             })
