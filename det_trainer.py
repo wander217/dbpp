@@ -51,9 +51,9 @@ class DetTrainer:
         stateDict: Tuple = self._checkpoint.load(self._device)
         if stateDict is not None:
             self._model.load_state_dict(stateDict[0])
-            self._optim.load_state_dict(stateDict[1])
-            self._startEpoch = stateDict[2] + 1
-            self._step = stateDict[3] + 1
+            # self._optim.load_state_dict(stateDict[1])
+            # self._startEpoch = stateDict[2] + 1
+            # self._step = stateDict[3] + 1
 
     def _updateLR(self, epoch: int):
         rate: float = (1. - epoch / self._totalEpoch) ** self._factor
