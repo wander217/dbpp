@@ -29,17 +29,20 @@ for path in data_paths:
                 document_bbox = np.array(target['bbox']).astype(np.int32)
         if document_bbox is None:
             continue
+        x_min, x_max = np.min(document_bbox[:, 0]), np.max(document_bbox[:, 0])
+        y_min, y_max = np.min(document_bbox[:, 1]), np.max(document_bbox[:, 1])
         mask = np.zeros(item['image'].shape, dtype=np.int32)
         mask = cv.fillPoly(mask, [np.array(document_bbox)], (1, 1, 1))
-        item['image'] = mask * item['image']
+        item['image'] = (mask * item['image'])[y_min: y_max + 1, x_min:x_max + 1]
         for target in item['target']:
             if target['label'] == "64.document":
                 continue
             tmp = np.array(target['bbox'])
             points = cv.boxPoints(cv.minAreaRect(tmp))
-            box = np.int16(points)
+            box = np.int16(points).reshape((-1, 2))
+            print(box.shape)
             new_target.append({
-                "bbox": box.tolist(),
+                "bbox": (box - np.array([x_min, y_min])).tolist(),
                 "label": target['label'],
                 "text": ""
             })

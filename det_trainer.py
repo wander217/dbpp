@@ -89,7 +89,7 @@ class DetTrainer:
             self.binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
             self.probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
             self._step += 1
-            if self._step % 400 == 0:
+            if self._step % 100 == 0:
                 validRS = self._valid_step()
                 self._model.train()
                 self._save({

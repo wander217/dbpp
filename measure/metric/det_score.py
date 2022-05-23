@@ -14,13 +14,13 @@ class DetScore:
                  probThresh: float,
                  scoreThresh: float,
                  label: str,
-                 resize:bool):
+                 resize: bool):
         self._totalBox: int = totalBox
         self._edgeThresh: float = edgeThresh
         self._probThresh: float = probThresh
         self._scoreThresh: float = scoreThresh
         self._label: str = label
-        self._resize:bool = resize
+        self._resize: bool = resize
 
     def __call__(self, pred: Dict, batch: Dict) -> Tuple:
         '''
@@ -38,7 +38,10 @@ class DetScore:
         scores: List = []
         batchSize: int = batch['img'].size(0)
         for i in range(batchSize):
-            box, score = self._finding(probMaps[i], segMaps[i], orgShapes[i], newShapes[i])
+            box, score = self._finding(probMaps[i],
+                                       segMaps[i],
+                                       orgShapes[i],
+                                       newShapes[i])
             boxes.append(box)
             scores.append(score)
         return boxes, scores
@@ -80,8 +83,10 @@ class DetScore:
             if minEdge < self._edgeThresh:
                 continue
             if self._resize:
-                bbox[:, 0] = np.clip(bbox[:, 0] / featShape[1] * orgShape[1], 0, orgShape[1] - 1)
-                bbox[:, 1] = np.clip(bbox[:, 1] / featShape[0] * orgShape[0], 0, orgShape[0] - 1)
+                bbox[:, 0] = np.clip(bbox[:, 0] / featShape[1] * orgShape[1],
+                                     0,  orgShape[1] - 1)
+                bbox[:, 1] = np.clip(bbox[:, 1] / featShape[0] * orgShape[0],
+                                     0, orgShape[0] - 1)
             boxes[i, :, :] = bbox.astype(np.int32)
             scores[i] = score
         return boxes, scores
