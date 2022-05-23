@@ -65,7 +65,7 @@ class DBPredictor:
 
 if __name__ == "__main__":
     configPath: str = r'config/dbpp_se_eb0.yaml'
-    pretrainedPath: str = r'D:\python_project\dbpp\logging\workspace\checkpoint\checkpoint_287.pth'
+    pretrainedPath: str = r'D:\python_project\dbpp\logging\workspace\checkpoint\checkpoint_325.pth'
     predictor = DBPredictor(configPath, pretrainedPath)
     root: str = r'D:\python_project\dbpp\breg_detection\test\image'
     count = 0
