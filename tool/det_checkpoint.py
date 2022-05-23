@@ -17,7 +17,6 @@ class DetCheckpoint:
         self._resume: str = resume.strip()
 
     def saveCheckpoint(self,
-                       step: int,
                        epoch: int,
                        model: nn.Module,
                        optim: optim.Optimizer):
@@ -25,7 +24,6 @@ class DetCheckpoint:
         torch.save({
             'model': model.state_dict(),
             'optimizer': optim.state_dict(),
-            'step': step,
             'epoch': epoch
         }, lastPath)
 
