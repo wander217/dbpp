@@ -10,7 +10,7 @@ lossModel:
       depthProb: 0.2
       useSE: True
     neck:
-      data_point: [ 24, 40, 112, 1280 ]
+      dataPoint: [ 24, 40, 112, 1280 ]
       exp: 256
     head:
       k: 50
