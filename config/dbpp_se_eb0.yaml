@@ -42,15 +42,15 @@ accurancy:
   accThresh: 0.5
 
 train:
-  batchSize: 8
+  batchSize: 4
   numWorkers: 2
   dropLast: True
   shuffle: True
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\TextOCR\splited\train/image'
-    tarFile: 'D:\TextOCR\splited\train/target.json'
+    imgDir: 'D:\python_project\dbpp\breg_detection\train/image'
+    tarFile: 'D:\python_project\dbpp\breg_detection\train/target.json'
     prep:
       DetAug:
         onlyResize: False
@@ -67,7 +67,7 @@ train:
       DetCrop:
         minCropSize: 0.1
         maxTries: 10
-        generalSize: [ 640, 640 ]
+        generalSize: [ 800, 800 ]
       DetForm:
         shrinkRatio: 0.4
       ProbMaker:
@@ -90,8 +90,8 @@ valid:
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\TextOCR\splited\valid/image'
-    tarFile: 'D:\TextOCR\splited\valid/target.json'
+    imgDir: 'D:\python_project\dbpp\breg_detection\valid/image'
+    tarFile: 'D:\python_project\dbpp\breg_detection\valid/target.json'
     prep:
       DetAug:
         onlyResize: True

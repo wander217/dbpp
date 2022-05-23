@@ -4,12 +4,12 @@ from collections import OrderedDict
 import yaml
 
 if __name__ == "__main__":
-    configPath = r'D:\workspace\project\dbpp\config\dbpp_se_eb0.yaml'
+    configPath = r'D:\python_project\dbpp\config\dbpp_se_eb0.yaml'
 
     with open(configPath, encoding='utf-8') as f:
         config = yaml.safe_load(f)
 
-    valid = DetDataset(**config['valid']['dataset'])
+    valid = DetDataset(**config['train']['dataset'])
     print(valid.__len__())
 
     for i in range(0, valid.__len__()):
