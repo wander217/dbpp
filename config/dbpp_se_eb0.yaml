@@ -32,7 +32,7 @@ lossModel:
 score:
   totalBox: 1000
   edgeThresh: 5
-  probThresh: 0.3
+  probThresh: 0.1
   scoreThresh: 0.7
   label: 'binaryMap'
 
@@ -49,8 +49,8 @@ train:
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\python_project\dbpp\breg_detection\train/image'
-    tarFile: 'D:\python_project\dbpp\breg_detection\train/target.json'
+    imgDir: 'D:\python_project\dbpp\google_text\train/image'
+    tarFile: 'D:\python_project\dbpp\google_text\train/target.json'
     prep:
       DetAug:
         onlyResize: False
@@ -63,7 +63,7 @@ train:
             y: [ -10, 10 ]
           fit_output: True
         Resize:
-          size: [ 0.5, 3. ]
+          size: [ 0.5, 2. ]
       DetCrop:
         minCropSize: 0.1
         maxTries: 10
@@ -72,7 +72,7 @@ train:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 8
+        minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3
@@ -90,8 +90,8 @@ valid:
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\python_project\dbpp\breg_detection\valid/image'
-    tarFile: 'D:\python_project\dbpp\breg_detection\valid/target.json'
+    imgDir: 'D:\python_project\dbpp\google_text\valid/image'
+    tarFile: 'D:\python_project\dbpp\google_text\valid/target.json'
     prep:
       DetAug:
         onlyResize: True
@@ -101,7 +101,7 @@ valid:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 8
+        minTextSize: 4
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3

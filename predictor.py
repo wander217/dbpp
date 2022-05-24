@@ -23,7 +23,7 @@ class DBPredictor:
         self._model.load_state_dict(state_dict['model'])
         # multi scale problem => training
         self._score: DetScore = DetScore(**config['score'], resize=True)
-        self._limit: int = 800
+        self._limit: int = 1024
 
     def _resize(self, image: np.ndarray) -> Tuple:
         org_h, org_w, _ = image.shape
@@ -64,7 +64,7 @@ class DBPredictor:
 
 if __name__ == "__main__":
     configPath: str = r'config/dbpp_se_eb0.yaml'
-    pretrainedPath: str = r'D:\python_project\dbpp\logging\workspace\checkpoint\checkpoint_375.pth'
+    pretrainedPath: str = r'D:\python_project\dbpp\logging\workspace_9\checkpoint\checkpoint_530.pth'
     predictor = DBPredictor(configPath, pretrainedPath)
     root: str = r'D:\python_project\dbpp\breg_detection\test\image'
     count = 0
