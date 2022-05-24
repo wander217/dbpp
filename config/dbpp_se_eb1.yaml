@@ -42,7 +42,7 @@ accurancy:
   accThresh: 0.5
 
 train:
-  batchSize: 4
+  batchSize: 8
   numWorkers: 2
   dropLast: True
   shuffle: True
@@ -83,7 +83,7 @@ train:
         key: [ 'polygon', 'shape', 'ignore', 'train' ]
 
 valid:
-  batchSize: 4
+  batchSize: 8
   numWorkers: 2
   dropLast: False
   shuffle: False
