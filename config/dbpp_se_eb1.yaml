@@ -72,7 +72,7 @@ train:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 4
+        minTextSize: 8
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3
@@ -101,7 +101,7 @@ valid:
         shrinkRatio: 0.4
       ProbMaker:
         shrinkRatio: 0.4
-        minTextSize: 4
+        minTextSize: 8
       ThreshMaker:
         expandRatio: 0.4
         minThresh: 0.3
