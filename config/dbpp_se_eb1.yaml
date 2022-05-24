@@ -63,7 +63,7 @@ train:
 #            y: [ -10, 10 ]
           fit_output: True
         Resize:
-          size: [ 0.5, 2. ]
+          size: [ 0.5, 3. ]
       DetCrop:
         minCropSize: 0.1
         maxTries: 10
