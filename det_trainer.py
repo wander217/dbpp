@@ -41,13 +41,8 @@ class DetTrainer:
         self._totalEpoch: int = totalEpoch + 1
         self._startEpoch: int = startEpoch
         self._curLR: float = lr
-
-    def _loadCheckpoint(self):
-        stateDict: Tuple = self._checkpoint.load(self._device)
-        if stateDict is not None:
-            self._model.load_state_dict(stateDict[0])
-            # self._optim.load_state_dict(stateDict[1])
-            # self._startEpoch = stateDict[2] + 1
+        self._step = 0
+        self._totalLoss: DetAverager = DetAverager()
 
     def _updateLR(self, epoch: int):
         rate: float = (1. - epoch / self._totalEpoch) ** self._factor
@@ -55,8 +50,15 @@ class DetTrainer:
         for groups in self._optim.param_groups:
             groups['lr'] = self._curLR
 
+    def _load(self):
+        stateDict: Tuple = self._checkpoint.load(self._device)
+        if stateDict is not None:
+            self._model.load_state_dict(stateDict[0])
+            self._optim.load_state_dict(stateDict[1])
+            self._startEpoch = stateDict[2] + 1
+
     def train(self):
-        self._loadCheckpoint()
+        self._load()
         self._logger.reportDelimitter()
         self._logger.reportTime("Start")
         self._logger.reportDelimitter()
@@ -64,69 +66,47 @@ class DetTrainer:
         for i in range(self._startEpoch, self._totalEpoch):
             self._logger.reportDelimitter()
             self._logger.reportTime("Epoch {}".format(i))
-            self._updateLR(i)
-            trainRS: Dict = self._train_step()
-            validRS: Dict = self._valid_step()
-            self._save(trainRS, validRS, i)
+            self._trainStep()
         self._logger.reportDelimitter()
         self._logger.reportTime("Finish")
         self._logger.reportDelimitter()
 
-    def _train_step(self) -> Dict:
+    def _trainStep(self):
         self._model.train()
-        totalLoss: DetAverager = DetAverager()
-        probLoss: DetAverager = DetAverager()
-        threshLoss: DetAverager = DetAverager()
-        binaryLoss: DetAverager = DetAverager()
-        for batch in self._train:
+        for i, batch in enumerate(self._train):
             self._optim.zero_grad()
             batchSize: int = batch['img'].size(0)
             pred, loss, metric = self._model(batch)
             loss = loss.mean()
             loss.backward()
             self._optim.step()
-            totalLoss.update(loss.item() * batchSize, batchSize)
-            threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
-            binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
-            probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
-        return {
-            'totalLoss': totalLoss.calc(),
-            'threshLoss': threshLoss.calc(),
-            'binaryLoss': binaryLoss.calc(),
-            'probLoss': probLoss.calc(),
-            'lr': self._curLR
-        }
+            self._totalLoss.update(loss.item() * batchSize, batchSize)
+            self._step += 1
+            if self._step % 300 == 0:
+                validRS = self._validStep()
+                self._model.train()
+                self._save({'totalLoss': self._totalLoss.calc()}, validRS)
+                self._totalLoss.reset()
 
-    def _valid_step(self):
+    def _validStep(self) -> Dict:
         self._model.eval()
         totalLoss: DetAverager = DetAverager()
-        probLoss: DetAverager = DetAverager()
-        threshLoss: DetAverager = DetAverager()
-        binaryLoss: DetAverager = DetAverager()
-        for batch in self._valid:
-            self._optim.zero_grad()
-            batchSize: int = batch['img'].size(0)
-            pred, loss, metric = self._model(batch)
-            totalLoss.update(loss.mean().item() * batchSize, batchSize)
-            threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
-            binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
-            probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
-        return {
-            'totalLoss': totalLoss.calc(),
-            'threshLoss': threshLoss.calc(),
-            'binaryLoss': binaryLoss.calc(),
-            'probLoss': probLoss.calc()
-        }
+        with torch.no_grad():
+            for batch in self._valid:
+                batchSize: int = batch['img'].size(0)
+                pred, loss, metric = self._model(batch)
+                totalLoss.update(loss.mean().item() * batchSize, batchSize)
+        return {'totalLoss': totalLoss.calc()}
 
-    def _save(self, trainRS: Dict, validRS: Dict, epoch: int):
-        self._logger.reportMetric("training", trainRS)
-        self._logger.reportMetric("validation", validRS)
+    def _save(self, trainRS: Dict, validRS: Dict):
+        self._logger.reportMetric(" - Training", trainRS)
+        self._logger.reportMetric(" - Validation", validRS)
         self._logger.writeFile({
-            "training": trainRS,
-            "validation": validRS
+            'training': trainRS,
+            'validation': validRS
         })
-        self._checkpoint.saveCheckpoint(epoch, self._model, self._optim)
-        self._checkpoint.saveModel(self._model, epoch)
+        self._checkpoint.saveCheckpoint(self._step, self._model, self._optim)
+        self._checkpoint.saveModel(self._model, self._step)
 
 
 if __name__ == "__main__":
