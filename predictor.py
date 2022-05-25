@@ -66,16 +66,17 @@ class DBPredictor:
 
 if __name__ == "__main__":
     configPath: str = r'config/dbpp_se_eb0.yaml'
-    pretrainedPath: str = r'D:\python_project\dbpp\logging_1\checkpoint_2236.pth'
+    pretrainedPath: str = r'D:\python_project\dbpp\checkpoint_3354.pth'
     predictor = DBPredictor(configPath, pretrainedPath)
-    root: str = r'D:\python_project\dbpp\breg_detection\valid\image'
+    root: str = r'D:\python_project\dbpp\breg_detection\test\image'
     count = 0
+    precision, recall, f1score = 0, 0, 0
     for subRoot, dirs, files in os.walk(root):
         for file in files:
             if file.endswith(".png") or file.endswith(".jpg"):
                 img = cv.imread(os.path.join(subRoot, file))
                 boxes, scores = predictor(img)
-                with open(r"D:\python_project\dbpp\breg_detection\valid\target.json", encoding='utf-8') as f:
+                with open(r"D:\python_project\dbpp\breg_detection\test\target.json", encoding='utf-8') as f:
                     data = json.loads(f.readline())
                 gt = {
                     "polygon": [[]],
@@ -90,5 +91,10 @@ if __name__ == "__main__":
                 det_acc(boxes, scores, gt)
                 result = det_acc.gather()
                 result['file_name'] = "test{}.jpg".format(count)
-                print(result)
+                recall += result['recall']
+                precision += result['precision']
+                f1score += result['f1score']
                 count += 1
+    print("recall: {}, precision: {}, f1score: {}".format(recall / count,
+                                                          precision / count,
+                                                          f1score / count))
