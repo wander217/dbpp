@@ -126,9 +126,9 @@ class DetTrainer:
                 binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
                 self._acc(*self._score(pred, batch), batch)
                 measure = self._acc.gather()
-                precision.update(measure['precision'].item() * batchSize, batchSize)
-                recall.update(measure['recall'].item() * batchSize, batchSize)
-                f1score.update(measure['f1score'].item() * batchSize, batchSize)
+                precision.update(measure['precision'] * batchSize, batchSize)
+                recall.update(measure['recall'] * batchSize, batchSize)
+                f1score.update(measure['f1score'] * batchSize, batchSize)
         return {
             'totalLoss': totalLoss.calc(),
             'probLoss': probLoss.calc(),
