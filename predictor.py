@@ -26,7 +26,7 @@ class DBPredictor:
         self._model.load_state_dict(state_dict['model'])
         # multi scale problem => training
         self._score: DetScore = DetScore(**config['score'])
-        self._limit: int = 960
+        self._limit: int = 1024
 
     def _resize(self, image: np.ndarray) -> Tuple:
         org_h, org_w, _ = image.shape
@@ -56,12 +56,12 @@ class DBPredictor:
             pred: OrderedDict = self._model(dict(img=inputImage), training=False)
             bs, ss = self._score(pred, dict(img=inputImage))
 
-            for i in range(len(bs[0])):
-                if ss[0][i] > 0:
-                    bboxes.append(bs[0][i])
-                    # bboxes.append(bs[0][i] * np.array([w / newW, h / newH]))
-                    scores.append(ss[0][i])
-            return bboxes, scores
+            # for i in range(len(bs[0])):
+            #     if ss[0][i] > 0:
+            #         bboxes.append(bs[0][i])
+            #         # bboxes.append(bs[0][i] * np.array([w / newW, h / newH]))
+            #         scores.append(ss[0][i])
+            return bs, ss
 
 
 if __name__ == "__main__":
@@ -75,11 +75,6 @@ if __name__ == "__main__":
             if file.endswith(".png") or file.endswith(".jpg"):
                 img = cv.imread(os.path.join(subRoot, file))
                 boxes, scores = predictor(img)
-                with open("pred_{}.json".format(file), 'w', encoding='utf-8') as f:
-                    pred = {
-                        "bbox": [[box for box in boxes]],
-                        "scores": [[score.tolist() for score in scores]]
-                    }
                 with open(r"D:\python_project\dbpp\breg_detection\valid\target.json", encoding='utf-8') as f:
                     data = json.loads(f.readline())
                 gt = {
@@ -92,5 +87,8 @@ if __name__ == "__main__":
                             gt['polygon'][0].append(bbox['bbox'])
                             gt['ignore'][0].append(False)
                 det_acc = DetAcc(0.5, 0.5, 0.3)
-                det_acc(pred["bbox"], pred["scores"], gt)
-                print(det_acc.gather())
+                det_acc(boxes, scores, gt)
+                result = det_acc.gather()
+                result['file_name'] = "test{}.jpg".format(count)
+                print(result)
+                count += 1

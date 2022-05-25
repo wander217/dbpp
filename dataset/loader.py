@@ -90,14 +90,14 @@ class DetCollate:
             threshMaps.append(element['threshMap'])
             threshMasks.append(element['threshMask'])
             if "polygon" in element:
-                for i in range(len(element['polygon'])):
-                    tmp = element['polygon'][i]
-                    x_min, x_max = np.min(tmp[:, 0]), np.max(tmp[:, 0])
-                    y_min, y_max = np.min(tmp[:, 1]), np.max(tmp[:, 1])
-                    element['polygon'][i] = np.array([
-                        [x_min, y_min], [x_max, y_min],
-                        [x_max, y_max], [x_min, y_max]
-                    ])
+                # for i in range(len(element['polygon'])):
+                #     tmp = element['polygon'][i]
+                #     x_min, x_max = np.min(tmp[:, 0]), np.max(tmp[:, 0])
+                #     y_min, y_max = np.min(tmp[:, 1]), np.max(tmp[:, 1])
+                #     element['polygon'][i] = np.array([
+                #         [x_min, y_min], [x_max, y_min],
+                #         [x_max, y_max], [x_min, y_max]
+                #     ])
                 polygons.append(element['polygon'])
             if "orgShape" in element:
                 orgShapes.append(element['orgShape'])
