@@ -13,14 +13,12 @@ class DetScore:
                  edgeThresh: float,
                  probThresh: float,
                  scoreThresh: float,
-                 label: str,
-                 resize: bool):
+                 label: str):
         self._totalBox: int = totalBox
         self._edgeThresh: float = edgeThresh
         self._probThresh: float = probThresh
         self._scoreThresh: float = scoreThresh
         self._label: str = label
-        self._resize: bool = resize
 
     def __call__(self, pred: Dict, batch: Dict) -> Tuple:
         '''
@@ -31,33 +29,24 @@ class DetScore:
         # thresholding probability map
         probMaps: Tensor = pred[self._label]
         segMaps: Tensor = probMaps > self._probThresh
-        orgShapes: Tensor = batch['orgShape']
-        newShapes: Tensor = batch['newShape']
 
         boxes: List = []
         scores: List = []
         batchSize: int = batch['img'].size(0)
         for i in range(batchSize):
-            box, score = self._finding(probMaps[i],
-                                       segMaps[i],
-                                       orgShapes[i],
-                                       newShapes[i])
+            box, score = self._finding(probMaps[i], segMaps[i])
             boxes.append(box)
             scores.append(score)
         return boxes, scores
 
-    def _finding(self, probMap: Tensor, segMap: Tensor, orgSize: Tensor, newSize: Tensor) -> Tuple:
+    def _finding(self, probMap: Tensor, segMap: Tensor) -> Tuple:
         '''
             :param probMap: probability map
             :param segMap: binary map
-            :param orgSize: origin size of image: (width, height)
-            :param newSize: new size of image: (width, height)
             :return: min bounding box and its score
         '''
         probMatrix: np.ndarray = probMap.cpu().detach().numpy()[0]
         segMatrix: np.ndarray = segMap.cpu().detach().numpy()[0]
-        featShape: Tuple = newSize.cpu().detach().numpy()
-        orgShape: np.ndarray = orgSize.cpu().detach().numpy()
         # find countour inside segment matrix
         contours, _ = cv.findContours(np.uint8(segMatrix * 255.),
                                       cv.RETR_LIST,
@@ -82,11 +71,6 @@ class DetScore:
             bbox, minEdge = self._minBoxSurrounding(contour)
             if minEdge < self._edgeThresh:
                 continue
-            if self._resize:
-                bbox[:, 0] = np.clip(bbox[:, 0] / featShape[1] * orgShape[1],
-                                     0,  orgShape[1] - 1)
-                bbox[:, 1] = np.clip(bbox[:, 1] / featShape[0] * orgShape[0],
-                                     0, orgShape[0] - 1)
             boxes[i, :, :] = bbox.astype(np.int32)
             scores[i] = score
         return boxes, scores

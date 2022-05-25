@@ -42,7 +42,7 @@ accurancy:
   accThresh: 0.5
 
 train:
-  batchSize: 8
+  batchSize: 1
   numWorkers: 2
   dropLast: True
   shuffle: True

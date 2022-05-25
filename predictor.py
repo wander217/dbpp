@@ -22,7 +22,7 @@ class DBPredictor:
         state_dict = torch.load(pretrained, map_location=self.device)
         self._model.load_state_dict(state_dict['model'])
         # multi scale problem => training
-        self._score: DetScore = DetScore(**config['score'], resize=True)
+        self._score: DetScore = DetScore(**config['score'])
         self._limit: int = 1024
 
     def _resize(self, image: np.ndarray) -> Tuple:
@@ -52,12 +52,11 @@ class DBPredictor:
             reImage, newH, newW = self._resize(image)
             inputImage = self._normalize(reImage)
             pred: OrderedDict = self._model(dict(img=inputImage), training=False)
-            bs, ss = self._score(pred, dict(img=inputImage,
-                                            orgShape=torch.Tensor([[h, w]]),
-                                            newShape=torch.Tensor([[newH, newW]])))
+            bs, ss = self._score(pred, dict(img=inputImage))
+
             for i in range(len(bs[0])):
                 if ss[0][i] > 0:
-                    bboxes.append(bs[0][i])
+                    bboxes.append(bs[0][i] * np.array([w / newW, h / newH]))
                     scores.append(ss[0][i])
             return bboxes, scores
 
@@ -74,6 +73,6 @@ if __name__ == "__main__":
                 img = cv.imread(os.path.join(subRoot, file))
                 boxes, scores = predictor(img)
                 for box in boxes:
-                    img = cv.polylines(img, [box], True, (0, 0, 255), 2)
+                    img = cv.polylines(img, [box.astype(np.int32)], True, (0, 0, 255), 2)
                 cv.imwrite("result/test{}.jpg".format(count), img)
                 count += 1

@@ -1,5 +1,4 @@
 import os.path
-
 import yaml
 import torch
 from dataset import DetLoader
@@ -9,6 +8,7 @@ import torch.optim as optim
 import argparse
 import warnings
 from loss_model import LossModel
+from measure import DetAcc, DetScore
 
 
 class DetTrainer:
@@ -17,6 +17,8 @@ class DetTrainer:
                  train: Dict,
                  valid: Dict,
                  optimizer: Dict,
+                 accurancy: Dict,
+                 score: Dict,
                  checkpoint: Dict,
                  logger: Dict,
                  totalEpoch: int,
@@ -31,6 +33,8 @@ class DetTrainer:
         self._train = DetLoader(**train).build()
         self._valid = DetLoader(**valid).build()
         self._checkpoint: DetCheckpoint = DetCheckpoint(**checkpoint)
+        self._acc: DetAcc = DetAcc(**accurancy)
+        self._score: DetScore = DetScore(**score)
         self._logger: DetLogger = DetLogger(**logger)
         optimCls = getattr(optim, optimizer['name'])
         self._lr: float = lr
@@ -113,11 +117,13 @@ class DetTrainer:
                 probLoss.update(metric['probLoss'].item() * batchSize, batchSize)
                 threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
                 binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
+                self._acc(*self._score(pred, batch), batch)
         return {
             'totalLoss': totalLoss.calc(),
             'probLoss': probLoss.calc(),
             'threshLoss': threshLoss.calc(),
             'binaryLoss': binaryLoss.calc(),
+            **self._acc.gather()
         }
 
     def _save(self, trainRS: Dict, validRS: Dict):
