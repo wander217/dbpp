@@ -43,7 +43,7 @@ accurancy:
 
 train:
   batchSize: 8
-  numWorkers: 2
+  numWorkers: 4
   dropLast: True
   shuffle: True
   pinMemory: False
@@ -81,7 +81,7 @@ train:
 
 valid:
   batchSize: 1
-  numWorkers: 2
+  numWorkers: 4
   dropLast: False
   shuffle: False
   pinMemory: False
