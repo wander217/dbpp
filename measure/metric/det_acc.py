@@ -13,7 +13,7 @@ class DetAcc:
         self._result: List = []
 
     def __call__(self, predBoxes: np.ndarray, scores: np.ndarray, batch: Dict):
-        targetBoxes: Tensor = batch['polygon']
+        targetBoxes: Tensor = batch['bbox']
         ignores: Tensor = batch['ignore']
         for targetBox, ignore, predBox, score in zip(targetBoxes, ignores, predBoxes, scores):
             target: List = [dict(polygon=targetBox[i], ignore=ignore[i]) for i in range(len(targetBox))]
