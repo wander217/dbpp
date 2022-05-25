@@ -131,16 +131,18 @@ class DetTrainer:
         }
 
     def _save(self, trainRS: Dict, validRS: Dict):
-        self._logger.reportTime("Step {}:".format(self._step))
-        self._logger.reportMetric(" - Training", trainRS)
-        self._logger.reportMetric(" - Validation", validRS)
-        self._logger.writeFile({
-            'training': trainRS,
-            'validation': validRS
-        })
         if validRS['f1score'] > self._f1score:
             self._f1score = validRS['f1score']
             self._checkpoint.saveCheckpoint(self._step, self._model, self._optim)
+        self._logger.reportTime("Step {}:".format(self._step))
+        self._logger.reportMetric(" - Training", trainRS)
+        self._logger.reportMetric(" - Validation", validRS)
+        self._logger.reportMetric(" - Best", {"f1score": self._f1score})
+        self._logger.writeFile({
+            'training': trainRS,
+            'validation': validRS,
+            "best": self._f1score
+        })
         self._checkpoint.saveModel(self._model, self._step)
 
 
