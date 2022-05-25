@@ -111,10 +111,7 @@ class DetAcc:
             else:
                 r = totalMatch / totalTarget
             recall.update(r)
-            if p + r == 0:
-                f = 1. if 2. * p * r == 0. else 0.
-            else:
-                f = 2. * p * r / (p + r)
+            f = 0. if (p + r) == 0. else 2. * p * r / (p + r)
             f1score.update(f)
         self._result.clear()
         return dict(precision=precision.calc(),
