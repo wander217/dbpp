@@ -4,6 +4,8 @@ import time
 from loss_model import LossModel
 import torch
 import yaml
+
+from measure import DetAcc
 from measure.metric import DetScore
 from typing import Dict, List, Tuple, OrderedDict
 import numpy as np
@@ -73,27 +75,22 @@ if __name__ == "__main__":
             if file.endswith(".png") or file.endswith(".jpg"):
                 img = cv.imread(os.path.join(subRoot, file))
                 boxes, scores = predictor(img)
-                with open("pred_{}.json".format(file),'w', encoding='utf-8') as f:
-                    f.write(json.dumps({
-                        "bbox": [[box.tolist() for box in boxes]],
+                with open("pred_{}.json".format(file), 'w', encoding='utf-8') as f:
+                    pred = {
+                        "bbox": [[box for box in boxes]],
                         "scores": [[score.tolist() for score in scores]]
-                    }))
+                    }
                 with open(r"D:\python_project\dbpp\breg_detection\valid\target.json", encoding='utf-8') as f:
                     data = json.loads(f.readline())
+                gt = {
+                    "polygon": [[]],
+                    "ignore": [[]]
+                }
                 for item in data:
                     if item['file_name'] == file:
-                        with open("gt_{}.json".format(file), 'w', encoding='utf-8') as f:
-                            new_item = {
-                                "polygon": [[]],
-                                "ignore": [[]]
-                            }
-                            for bbox in item['target']:
-                                new_item['polygon'][0].append(bbox['bbox'])
-                                new_item['ignore'][0].append(False)
-                            f.write(json.dumps(new_item))
-                        break
-                break
-                # for box in boxes:
-                #     img = cv.polylines(img, [box.astype(np.int32)], True, (0, 0, 255), 2)
-                # cv.imwrite("result/test{}.jpg".format(count), img)
-                # count += 1
+                        for bbox in item['target']:
+                            gt['polygon'][0].append(bbox['bbox'])
+                            gt['ignore'][0].append(False)
+                det_acc = DetAcc(0.5, 0.5, 0.3)
+                det_acc(pred["bbox"], pred["scores"], gt)
+                print(det_acc.gather())

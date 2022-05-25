@@ -101,11 +101,20 @@ class DetAcc:
             totalMatch: int = element['totalMatch']
             totalTarget: int = element['totalTarget']
             totalPred: int = element['totalPred']
-            p: float = 0 if totalPred == 0 else totalMatch / totalPred
+            if totalPred == 0:
+                p = 1. if totalMatch == 0 else totalMatch / totalPred
+            else:
+                p = 0.
             precision.update(p)
-            r: float = 0 if totalTarget == 0 else totalMatch / totalTarget
+            if totalTarget == 0:
+                r = 1. if totalMatch == 0 else totalMatch / totalTarget
+            else:
+                r = 0.
             recall.update(r)
-            f: float = 0 if (p + r) == 0 else 2 * p * r / (p + r)
+            if p + r == 0:
+                f = 1. if 2 * p * r == 0 else 2 * p * r / (p + r)
+            else:
+                f = 0
             f1score.update(f)
         self._result.clear()
         return dict(precision=precision.calc(),
