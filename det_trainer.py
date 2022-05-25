@@ -62,8 +62,8 @@ class DetTrainer:
         stateDict: Tuple = self._checkpoint.load(self._device)
         if stateDict is not None:
             self._model.load_state_dict(stateDict[0])
-            self._optim.load_state_dict(stateDict[1])
-            self._startEpoch = stateDict[2] + 1
+            # self._optim.load_state_dict(stateDict[1])
+            # self._startEpoch = stateDict[2] + 1
 
     def train(self):
         self._load()
