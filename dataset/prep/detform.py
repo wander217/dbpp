@@ -29,7 +29,7 @@ class DetForm:
         orgShape: np.ndarray = np.array(data['orgShape'])
 
         for tar in anno:
-            polygon.append(np.array(tar['polygon']))
+            polygon.append(np.array(tar['polygon']).reshape((-1, 2)))
             ignore.append(tar['ignore'])
 
         return OrderedDict(

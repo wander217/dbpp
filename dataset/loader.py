@@ -81,7 +81,6 @@ class DetCollate:
         threshMasks: List = []
         polygons: List = []
         orgShapes: List = []
-        newShapes: List = []
         ignores: List = []
         output: OrderedDict = OrderedDict()
         for element in batch:
@@ -91,11 +90,17 @@ class DetCollate:
             threshMaps.append(element['threshMap'])
             threshMasks.append(element['threshMask'])
             if "polygon" in element:
+                for i in range(len(element['polygon'])):
+                    tmp = element['polygon'][i]
+                    x_min, x_max = np.min(tmp[:, 0]), np.max(tmp[:, 0])
+                    y_min, y_max = np.min(tmp[:, 1]), np.max(tmp[:, 1])
+                    element['polygon'][i] = np.array([
+                        [x_min, y_min], [x_max, y_min],
+                        [x_max, y_max], [x_min, y_max]
+                    ])
                 polygons.append(element['polygon'])
             if "orgShape" in element:
                 orgShapes.append(element['orgShape'])
-            if "newShape" in element:
-                newShapes.append(element['newShape'])
             if "ignore" in element:
                 ignores.append(element['ignore'])
         output.update(
@@ -107,10 +112,6 @@ class DetCollate:
         )
         if len(polygons) != 0:
             output.update(polygon=torch.from_numpy(np.asarray(polygons, dtype=np.int32)))
-        if len(orgShapes) != 0:
-            output.update(orgShape=torch.from_numpy(np.asarray(orgShapes, dtype=np.int32)))
-        if len(newShapes) != 0:
-            output.update(newShape=torch.from_numpy(np.asarray(newShapes, dtype=np.int32)))
         if len(ignores) != 0:
             output.update(ignore=torch.from_numpy(np.asarray(ignores, dtype=np.bool)))
         return output

@@ -49,8 +49,8 @@ train:
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\TextOCR\splited\train/image'
-    tarFile: 'D:\TextOCR\splited\train/target.json'
+    imgDir: 'D:\python_project\dbpp\google_text\train/image'
+    tarFile: 'D:\python_project\dbpp\google_text\train/target.json'
     prep:
       DetAug:
         onlyResize: False
@@ -77,18 +77,18 @@ train:
       DetNorm:
         mean: [ 122.67891434, 116.66876762, 104.00698793 ]
       DetFilter:
-        key: [ 'polygon', 'orgShape', 'ignore', 'train' ]
+        key: [ 'polygon', 'shape', 'ignore', 'train' ]
 
 valid:
   batchSize: 1
-  numWorkers: 4
+  numWorkers: 0
   dropLast: False
   shuffle: False
   pinMemory: False
   dataset:
     imgType: 0
-    imgDir: 'D:\python_project\dbpp\breg_detection\valid\image'
-    tarFile: 'D:\python_project\dbpp\breg_detection\valid\target.json'
+    imgDir: 'D:\python_project\dbpp\google_text\valid/image'
+    tarFile: 'D:\python_project\dbpp\google_text\valid/target.json'
     prep:
       DetAug:
         onlyResize: True
