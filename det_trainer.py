@@ -46,6 +46,7 @@ class DetTrainer:
         self._startEpoch: int = startEpoch
         self._curLR: float = lr
         self._step = 0
+        self._f1score = 0.0
         self._totalLoss: DetAverager = DetAverager()
         self._probLoss: DetAverager = DetAverager()
         self._threshLoss: DetAverager = DetAverager()
@@ -137,7 +138,9 @@ class DetTrainer:
             'training': trainRS,
             'validation': validRS
         })
-        self._checkpoint.saveCheckpoint(self._step, self._model, self._optim)
+        if validRS['f1score'] > self._f1score:
+            self._f1score = validRS['f1score']
+            self._checkpoint.saveCheckpoint(self._step, self._model, self._optim)
         self._checkpoint.saveModel(self._model, self._step)
 
 
