@@ -78,8 +78,8 @@ class ProbMaker:
             area = self._polygonArea(polygons[i])
             if abs(area) < 1:
                 ignores[i] = True
-            if area > 0:
-                polygons[i] = polygons[i][(0, 3, 2, 1), :]
+            # if area > 0:
+            #     polygons[i] = polygons[i][(0, 3, 2, 1), :]
         return polygons, ignores
 
     def _polygonArea(self, polygon: np.ndarray) -> float:
