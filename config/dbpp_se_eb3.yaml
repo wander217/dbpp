@@ -81,7 +81,7 @@ train:
 
 valid:
   batchSize: 1
-  numWorkers: 0
+  numWorkers: 2
   dropLast: False
   shuffle: False
   pinMemory: False
