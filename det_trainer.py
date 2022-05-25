@@ -113,6 +113,9 @@ class DetTrainer:
         threshLoss: DetAverager = DetAverager()
         probLoss: DetAverager = DetAverager()
         binaryLoss: DetAverager = DetAverager()
+        precision: DetAverager = DetAverager()
+        recall: DetAverager = DetAverager()
+        f1score: DetAverager = DetAverager()
         with torch.no_grad():
             for batch in self._valid:
                 batchSize: int = batch['img'].size(0)
@@ -122,12 +125,18 @@ class DetTrainer:
                 threshLoss.update(metric['threshLoss'].item() * batchSize, batchSize)
                 binaryLoss.update(metric['binaryLoss'].item() * batchSize, batchSize)
                 self._acc(*self._score(pred, batch), batch)
+                measure = self._acc.gather()
+                precision.update(measure['precision'].item() * batchSize, batchSize)
+                recall.update(measure['recall'].item() * batchSize, batchSize)
+                f1score.update(measure['f1score'].item() * batchSize, batchSize)
         return {
             'totalLoss': totalLoss.calc(),
             'probLoss': probLoss.calc(),
             'threshLoss': threshLoss.calc(),
             'binaryLoss': binaryLoss.calc(),
-            **self._acc.gather()
+            'precision': precision.calc(),
+            'recall': recall.calc(),
+            'f1score': f1score.calc(),
         }
 
     def _save(self, trainRS: Dict, validRS: Dict):

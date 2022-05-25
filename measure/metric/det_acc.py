@@ -1,3 +1,4 @@
+import json
 from typing import List, Dict
 import numpy as np
 from torch import Tensor
@@ -16,9 +17,11 @@ class DetAcc:
         targetBoxes: Tensor = batch['polygon']
         ignores: Tensor = batch['ignore']
         for targetBox, ignore, predBox, score in zip(targetBoxes, ignores, predBoxes, scores):
-            target: List = [dict(polygon=targetBox[i], ignore=ignore[i]) for i in range(len(targetBox))]
-            pred: List = [dict(polygon=predBox[i].tolist()) for i in range(predBox.shape[0]) if
-                          score[i] > self._scoreThresh]
+            target: List = [dict(polygon=targetBox[i], ignore=ignore[i])
+                            for i in range(len(targetBox))]
+            pred: List = [dict(polygon=predBox[i].tolist())
+                          for i in range(len(predBox))
+                          if score[i] > self._scoreThresh]
             self._result.append(self._evaluate(pred, target))
 
     def _union(self, polygon1, polygon2) -> float:
@@ -108,3 +111,15 @@ class DetAcc:
         return dict(precision=precision.calc(),
                     recall=recall.calc(),
                     f1score=f1score.calc())
+
+
+if __name__ == "__main__":
+    det_acc = DetAcc(0.5, 0.5, 0.3)
+    with open(r"D:\python_project\dbpp\gt_0_IMG_2683.png.json", 'r', encoding='utf-8') as f:
+        gt = json.loads(f.readline())
+    with open(r"D:\python_project\dbpp\pred_0_IMG_2683.png.json", 'r', encoding='utf-8') as f:
+        pred = json.loads(f.readline())
+        for i in range(len(pred['bbox'][0])):
+            pred['bbox'][0][i] = np.array(pred['bbox'][0][i])
+    det_acc(pred["bbox"], pred["scores"], gt)
+    print(det_acc.gather())
