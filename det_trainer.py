@@ -98,10 +98,13 @@ class DetTrainer:
                 self._save({
                     'totalLoss': self._totalLoss.calc(),
                     'probLoss': self._probLoss.calc(),
-                    'threshLoss': self._probLoss.calc(),
-                    'binaryLoss': self._probLoss.calc(),
+                    'threshLoss': self._threshLoss.calc(),
+                    'binaryLoss': self._binaryLoss.calc(),
                 }, validRS)
                 self._totalLoss.reset()
+                self._probLoss.reset()
+                self._threshLoss.reset()
+                self._binaryLoss.reset()
 
     def _validStep(self) -> Dict:
         self._model.eval()
