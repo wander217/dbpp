@@ -67,7 +67,7 @@ train:
       DetCrop:
         minCropSize: 0.1
         maxTries: 10
-        generalSize: [ 960, 960 ]
+        generalSize: [ 640, 540 ]
       DetForm:
         shrinkRatio: 0.7
       ProbMaker:

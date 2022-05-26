@@ -26,7 +26,7 @@ class DBPredictor:
         self._model.load_state_dict(state_dict['model'])
         # multi scale problem => training
         self._score: DetScore = DetScore(**config['score'])
-        self._limit: int = 1024
+        self._limit: int = 960
 
     def _resize(self, image: np.ndarray) -> Tuple:
         org_h, org_w, _ = image.shape
@@ -66,7 +66,7 @@ class DBPredictor:
 
 if __name__ == "__main__":
     configPath: str = r'config/dbpp_se_eb0.yaml'
-    pretrainedPath: str = r'D:\python_project\dbpp\checkpoint_3354.pth'
+    pretrainedPath: str = r'D:\python_project\dbpp\pretrained\abc\checkpoint_602.pth'
     predictor = DBPredictor(configPath, pretrainedPath)
     root: str = r'D:\python_project\dbpp\breg_detection\test\image'
     count = 0
@@ -90,6 +90,7 @@ if __name__ == "__main__":
                 det_acc = DetAcc(0.5, 0.5, 0.3)
                 det_acc(boxes, scores, gt)
                 result = det_acc.gather()
+                print(result)
                 result['file_name'] = "test{}.jpg".format(count)
                 recall += result['recall']
                 precision += result['precision']
