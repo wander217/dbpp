@@ -32,18 +32,17 @@ class DetCrop:
         img: np.ndarray = data['img']
         orgAnno: List = data['target']
         polygon_list: List = [tar['polygon'] for tar in orgAnno if not tar['ignore']]
-        if random.randint(0, 1) == 0:
-            cropX, cropY, cropW, cropH = self._cropArea(img, polygon_list)
-        else:
-            cropX, cropY, cropW, cropH = 0, 0, img.shape[1], img.shape[0]
 
+        cropX, cropY, cropW, cropH = self._cropArea(img, polygon_list)
         scaleW: float = self._generalSize[0] / cropW
         scaleH: float = self._generalSize[1] / cropH
         scale: float = min(scaleH, scaleW)
         h = int(scale * cropH)
         w = int(scale * cropW)
 
-        padImage: np.ndarray = np.zeros((self._generalSize[1], self._generalSize[0], img.shape[2]), img.dtype)
+        padImage: np.ndarray = np.zeros((self._generalSize[1],
+                                         self._generalSize[0],
+                                         img.shape[2]), img.dtype)
         padImage[:h, :w] = cv.resize(img[cropY:cropY + cropH, cropX:cropX + cropW],
                                      (w, h),
                                      interpolation=cv.INTER_CUBIC)
