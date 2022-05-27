@@ -22,15 +22,15 @@ class DBNeck(nn.Module):
         expOutput: int = exp // 4
         self.out5: nn.Module = nn.Sequential(
             nn.Conv2d(exp, expOutput, kernel_size=3, padding=1, bias=bias),
-            nn.Upsample(scale_factor=8, mode='nearest')
+            nn.Upsample(scale_factor=8, mode='bilinear')
         )
         self.out4: nn.Module = nn.Sequential(
             nn.Conv2d(exp, expOutput, kernel_size=3, padding=1, bias=bias),
-            nn.Upsample(scale_factor=4, mode='nearest')
+            nn.Upsample(scale_factor=4, mode='bilinear')
         )
         self.out3: nn.Module = nn.Sequential(
             nn.Conv2d(exp, expOutput, kernel_size=3, padding=1, bias=bias),
-            nn.Upsample(scale_factor=2, mode='nearest')
+            nn.Upsample(scale_factor=2, mode='bilinear')
         )
         self.out2: nn.Module = nn.Sequential(
             nn.Conv2d(exp, expOutput, kernel_size=3, padding=1, bias=bias)
