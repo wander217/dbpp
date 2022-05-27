@@ -58,23 +58,20 @@ train:
           p: 0.5
         Affine:
           rotate: [ -20, 20 ]
-          shear:
-            x: [ -10, 10 ]
-            y: [ -10, 10 ]
           fit_output: True
         Resize:
           size: [ 0.5, 3. ]
       DetCrop:
         minCropSize: 0.1
         maxTries: 10
-        generalSize: [ 640, 540 ]
+        generalSize: [ 640, 640 ]
       DetForm:
-        shrinkRatio: 0.7
+        shrinkRatio: 0.4
       ProbMaker:
-        shrinkRatio: 0.7
+        shrinkRatio: 0.4
         minTextSize: 8
       ThreshMaker:
-        expandRatio: 0.3
+        expandRatio: 0.4
         minThresh: 0.3
         maxThresh: 0.7
       DetNorm:
